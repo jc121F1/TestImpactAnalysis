@@ -11,7 +11,8 @@
             "request": "launch",
             "program": "launcher.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "args" : ["--from_coverage", "test_json.json"]
         }
     ]
 }
