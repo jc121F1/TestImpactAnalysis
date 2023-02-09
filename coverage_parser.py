@@ -5,7 +5,7 @@ FILE_CONST = "files"
 COV_TEST_CONST = 'covering_tests'
 CONTEXTS = "contexts"
 
-class Parser():
+class CoverageParserAndProcessor():
     __json_obj = {}
     __files = {}
 
@@ -14,9 +14,12 @@ class Parser():
         with open(filepath, "rb") as f:
             self.__json_obj: dict = json.load(f)
         
-        for file_name, file_info in self.__json_obj[FILE_CONST].items():
-            self.__files[file_name] = self.parse_covering_tests(file_info)
-
+        try:
+            for file_name, file_info in self.__json_obj[FILE_CONST].items():
+                self.__files[file_name] = self.parse_covering_tests(file_info)
+        except Exception as e:
+            print(e)
+            
     def parse_covering_tests(self, file_info):
         covering_tests = []
         for line, contexts in file_info[CONTEXTS].items():
