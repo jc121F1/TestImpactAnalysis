@@ -1,5 +1,5 @@
 import argparse
-import coverage_parser
+from coverage_parser import CoverageParserAndProcessor
 import pathlib
 
 FROM_COVERAGE = "from_coverage"
@@ -25,7 +25,7 @@ def parse_args():
 def main(args: dict):
     coverage_file = args.get(FROM_COVERAGE)
     if coverage_file:
-        print(coverage_parser.Parser(coverage_file).get_file_names)
+        print(CoverageParserAndProcessor(coverage_file).get_file_names)
 
 
 if __name__ == "__main__":
