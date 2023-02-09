@@ -1,4 +1,4 @@
-from git import Repo, Commit, Diff, GitError
+from git import Repo, Commit, Diff, GitError, NoSuchPathError, InvalidGitRepositoryError, GitCommandError
 from pathlib import Path
 
 
@@ -15,7 +15,11 @@ class ChangeListGenerator:
         Args:
             path (Path): Local path to the git repository that we want to build a changelist in.
         """
-        self.repo = Repo(path)
+        try:
+            self.repo = Repo(path)
+        except (NoSuchPathError, InvalidGitRepositoryError) as e:
+            print("An exception occured, it is as follows:  {e}")
+            raise e
 
     def get_changelist(self, initial_commit_id, final_commit_id):
         """
@@ -31,21 +35,22 @@ class ChangeListGenerator:
         Returns:
             git.DiffIndex : The diff between the initial and final commit, containing all changes and their types in an iterable.
         """
-        if self.verify_initial_commit_is_before_final_commit(initial_commit_id, final_commit_id):
+        try:
+            if self.initial_commit_is_before_final_commit(initial_commit_id, final_commit_id):
 
-            try:
                 init_commit = self.repo.commit(initial_commit_id)
                 print(f"Selecting init_commit as : {init_commit}")
                 final_commit = self.repo.commit(final_commit_id)
                 print(f"Selecting final commit as : {final_commit}")
                 diff = final_commit.diff(init_commit)
-            except Exception as e:
-                print("An exception occured, it is as follows:  {e}")
 
-            return diff
-        else:
-            raise ValueError(
-                "Initial commit occurs after final commit. This is an invalid configuration for generating a changelist.")
+                return diff
+            else:
+                raise ValueError(
+                    "Initial commit occurs after final commit. This is an invalid configuration for generating a changelist.")
+        except (Exception, GitCommandError) as e:
+            print(f"An exception occured, it is as follows:  {e}")
+            raise e
 
     def initial_commit_is_before_final_commit(self, initial_commit_id, final_commit_id):
         """
