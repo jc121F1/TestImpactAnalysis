@@ -1,18 +1,26 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
 
-        {
-            "name": "Python: Launcher.py",
-            "type": "python",
-            "request": "launch",
-            "program": "launcher.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args" : ["--from_coverage", "test_json.json"]
-        }
-    ]
+    {
+      "name": "Python: Launcher.py",
+      "type": "python",
+      "request": "launch",
+      "program": "launcher.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["--from_coverage", "test_json.json"]
+    }
+  ]
 }
