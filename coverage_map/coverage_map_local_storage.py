@@ -1,6 +1,6 @@
 import json
 import uuid
-from coverage_map_storage import CoverageMapStorage, RetentionPolicy as SP
+from coverage_map_storage import CoverageMapStorage, RetentionPolicy as RP
 from coverage_map_logger import get_logger
 import os
 from pathlib import Path
@@ -12,26 +12,31 @@ class LocalCoverageMapStorage(CoverageMapStorage):
 
     id = uuid.uuid1()
 
-    def __init__(self, storage_location: Path, storage_policy: SP = SP.KEEP_ALL):
-        self.retention_policy = storage_policy
+    def __init__(self, storage_location: Path, retention_policy: RP):
+        self.retention_policy = retention_policy
         self.storage_location = storage_location
-        self.validate_storage_location
         self.map = self.load_map()
 
     def load_map(self):
         try:
-            latest_file = max(self.storage_location.rglob(
-                f'*{self.file_extension}'), key=os.path.getctime)
-            with open(latest_file, "rb") as f:
-                return json.load(f)
+            self.validate_storage_location()
+            glob = self.storage_location.rglob(
+                f'*{self.file_extension}')
+            glob_len = sum(1 for x in glob)
+            if glob_len > 0:
+                latest_file = max(glob, key=os.path.getctime)
+                with open(latest_file, "rb") as f:
+                    return json.load(f)
+            else:
+                raise ValueError("No test impact files found")
         except json.JSONDecodeError as e:
-            logger.warning(f"Error {e}. Error parsing JSON Coverage Map.")
+            logger.warning(f"Error: {e}. Error parsing JSON Coverage Map.")
         except Exception as e:
-            logger.warning(f"Error {e}")
+            logger.warning(f"Error: {e}")
 
     def save_map(self, map: dict):
-        self.validate_storage_location
         try:
+            self.validate_storage_location()
             storage_file_path = self.storage_location.joinpath(Path(
                 f"{self.file_name}_{self.id}.{self.file_extension}"))
             with open(storage_file_path, "w+") as f:
@@ -42,15 +47,15 @@ class LocalCoverageMapStorage(CoverageMapStorage):
             logger.warning(f"Error {e}")
 
     def apply_storage_policy(self):
-        if self.retention_policy == SP.KEEP_ALL:
+        if self.retention_policy == RP.KEEP_ALL:
             pass
-        elif self.retention_policy == SP.KEEP_ONE:
+        elif self.retention_policy == RP.KEEP_ONE:
             latest_file = max(self.storage_location.rglob(
                 f'*{self.file_extension}'), key=os.path.getctime)
             for file in self.storage_location.rglob(f'*{self.file_extension}'):
                 if (file != latest_file):
                     os.remove(file)
-        elif self.retention_policy == SP.KEEP_TEN:
+        elif self.retention_policy == RP.KEEP_TEN:
             files_to_delete = sorted(self.storage_location.rglob(
                 f'*{self.file_extension}'), key=os.path.getctime, reverse=True)[10:]
             for file in files_to_delete:
@@ -62,14 +67,7 @@ class LocalCoverageMapStorage(CoverageMapStorage):
             return True
         return False
 
-    @property
     def validate_storage_location(self):
         if (self.storage_location.exists()):
             return True
-        raise ValueError("Error, folder does not exist.")
-
-
-storage_location = Path(str(Path.cwd())+"/test_dir")
-lc = LocalCoverageMapStorage(storage_location, SP.KEEP_ONE)
-print(lc.has_map)
-lc.save_map(lc.map)
+        raise ValueError(f"Folder {self.storage_location} does not exist.")
