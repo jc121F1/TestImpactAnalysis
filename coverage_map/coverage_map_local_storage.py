@@ -1,7 +1,7 @@
 import json
 import uuid
-from coverage_map_storage import CoverageMapStorage, RetentionPolicy as RP
-from coverage_map_logger import get_logger
+from coverage_map.coverage_map_storage import CoverageMapStorage, RetentionPolicy as RP
+from coverage_map.coverage_map_logger import get_logger
 import os
 from pathlib import Path
 
