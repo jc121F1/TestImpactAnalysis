@@ -1,6 +1,6 @@
 import json
 import uuid
-from coverage_map_storage import CoverageMapStorage, StoragePolicy as SP
+from coverage_map_storage import CoverageMapStorage, RetentionPolicy as SP
 from coverage_map_logger import get_logger
 import os
 from pathlib import Path
@@ -13,7 +13,7 @@ class LocalCoverageMapStorage(CoverageMapStorage):
     id = uuid.uuid1()
 
     def __init__(self, storage_location: Path, storage_policy: SP = SP.KEEP_ALL):
-        self.storage_policy = storage_policy
+        self.retention_policy = storage_policy
         self.storage_location = storage_location
         self.validate_storage_location
         self.map = self.load_map()
@@ -42,15 +42,15 @@ class LocalCoverageMapStorage(CoverageMapStorage):
             logger.warning(f"Error {e}")
 
     def apply_storage_policy(self):
-        if self.storage_policy == SP.KEEP_ALL:
+        if self.retention_policy == SP.KEEP_ALL:
             pass
-        elif self.storage_policy == SP.KEEP_ONE:
+        elif self.retention_policy == SP.KEEP_ONE:
             latest_file = max(self.storage_location.rglob(
                 f'*{self.file_extension}'), key=os.path.getctime)
             for file in self.storage_location.rglob(f'*{self.file_extension}'):
                 if (file != latest_file):
                     os.remove(file)
-        elif self.storage_policy == SP.KEEP_TEN:
+        elif self.retention_policy == SP.KEEP_TEN:
             files_to_delete = sorted(self.storage_location.rglob(
                 f'*{self.file_extension}'), key=os.path.getctime, reverse=True)[10:]
             for file in files_to_delete:
