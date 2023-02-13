@@ -14,14 +14,19 @@ class CoverageMapEngine():
         self.storage_mode = storage_mode
         self.storage_retention_policy = storage_retention_policy
         if (coverage := self.retrieve_coverage(coverage_dir)):
-            self.coverage = coverage
+            self.coverage_map = coverage
         else:
             generator = Generator(pytest_args, coverage_args)
             generator.generate_coverage()
-            self.coverage = generator.load_coverage()
+            self.coverage_map = generator.load_coverage()
 
     def retrieve_coverage(self, coverage_dir: str):
         if self.storage_mode == SM.LOCAL:
             if (storage := LocalStorage(coverage_dir, self.storage_retention_policy).has_map):
                 return storage.map
         return None
+    
+    def store_coverage(self, coverage_dir: str, coverage_map: dict):
+        if self.storage_mode == SM.LOCAL:
+            storage = LocalStorage(coverage_dir, self.storage_retention_policy)
+            storage.save_map(coverage_map)
