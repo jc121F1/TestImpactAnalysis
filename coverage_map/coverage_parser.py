@@ -9,13 +9,15 @@ CONTEXTS = "contexts"
 class CoverageParserAndProcessor():
     __json_obj = {}
     __files = {}
+    __coverage_data = {}
 
     def __init__(self, filepath: pathlib.Path):
         try:
             with open(filepath, "rb") as f:
                 self.__json_obj: dict = json.load(f)
             for file_name, file_info in self.__json_obj[FILE_CONST].items():
-                self.__files[file_name] = self.parse_covering_tests(file_info)
+                self.__coverage_data[file_name] = self.parse_covering_tests(
+                    file_info)
         except Exception as e:
             print(e)
 
@@ -23,9 +25,8 @@ class CoverageParserAndProcessor():
         covering_tests = []
         for line, contexts in file_info[CONTEXTS].items():
             covering_tests.extend(contexts)
-        file_info[COV_TEST_CONST] = [x for x in set(covering_tests) if x != ""]
-        return file_info
+        return [x for x in set(covering_tests) if x != ""]
 
     @property
     def coverage(self):
-        return self.__files
+        return self.__coverage_data
