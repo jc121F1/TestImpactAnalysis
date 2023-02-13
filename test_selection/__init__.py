@@ -1,1 +1,1 @@
-import test_selection_engine as engine
+from .test_selection_engine import TestSelectionEngine as Engine
