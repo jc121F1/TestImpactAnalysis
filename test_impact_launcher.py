@@ -1,5 +1,5 @@
 import argparse
-from coverage_parser import CoverageParserAndProcessor
+from coverage_map.coverage_parser import CoverageParserAndProcessor
 import pathlib
 
 FROM_COVERAGE = "from_coverage"
