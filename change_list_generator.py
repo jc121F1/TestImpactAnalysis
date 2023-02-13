@@ -64,3 +64,6 @@ class ChangeListGenerator:
             Bool: Is the commit referred to by initial_commit_id is an ancestor of final_commit_id, true or false.
         """
         return self.repo.is_ancestor(initial_commit_id, final_commit_id)
+    
+    def __del__(self):
+        self.repo.close()
