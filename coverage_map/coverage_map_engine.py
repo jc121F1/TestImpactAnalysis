@@ -30,3 +30,13 @@ class CoverageMapEngine():
         if self.storage_mode == SM.LOCAL:
             storage = LocalStorage(coverage_dir, self.storage_retention_policy)
             storage.save_map(coverage_map)
+
+    @property
+    def has_coverage(self):
+        try:
+            if self.coverage_map:
+                return True
+            return False
+        except AttributeError as e:
+            self.coverage_map = None
+    
