@@ -1,1 +1,2 @@
-class CoverageMapParser
+class CoverageMapParser():
+    pass
