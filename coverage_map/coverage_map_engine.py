@@ -1,8 +1,8 @@
 from pathlib import Path
-from coverage_generator import CoverageGenerator as Generator
-from coverage_map_local_storage import LocalCoverageMapStorage as LocalStorage
-from coverage_map_storage import StorageMode as SM, RetentionPolicy as RP
-from coverage_map_logger import get_logger
+from coverage_map.coverage_generator import CoverageGenerator as Generator
+from coverage_map.coverage_map_local_storage import LocalCoverageMapStorage as LocalStorage
+from coverage_map.coverage_map_storage import StorageMode as SM, RetentionPolicy as RP
+from coverage_map.coverage_map_logger import get_logger
 
 logger = get_logger(__file__)
 
@@ -18,12 +18,10 @@ class CoverageMapEngine():
         else:
             generator = Generator(pytest_args, coverage_args)
             generator.generate_coverage()
+            self.coverage = generator.load_coverage()
 
     def retrieve_coverage(self, coverage_dir: str):
         if self.storage_mode == SM.LOCAL:
             if (storage := LocalStorage(coverage_dir, self.storage_retention_policy).has_map):
                 return storage.map
         return None
-
-
-cm = CoverageMapEngine(Path("test"), SM.LOCAL, RP.KEEP_ALL, "py", "cov")
