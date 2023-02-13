@@ -1,8 +1,6 @@
 from git import DiffIndex
 import coverage_map as CoverageMap
 from pathlib import Path
-
-
 class TestSelectionEngine:
 
     def __init__(self, changelist: DiffIndex, test_selection_mode, coverage_dir: Path):
