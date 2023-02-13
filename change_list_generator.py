@@ -1,7 +1,6 @@
 from git import Repo, Commit, Diff, GitError, NoSuchPathError, InvalidGitRepositoryError, GitCommandError
 from pathlib import Path
 
-
 class ChangeListGenerator:
     """
         This class is used to generate git.Diff objects that represent the changelist between two commits.
