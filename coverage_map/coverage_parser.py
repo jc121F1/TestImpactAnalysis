@@ -11,10 +11,9 @@ class CoverageParserAndProcessor():
     __files = {}
 
     def __init__(self, filepath: pathlib.Path):
-        with open(filepath, "rb") as f:
-            self.__json_obj: dict = json.load(f)
-
         try:
+            with open(filepath, "rb") as f:
+                self.__json_obj: dict = json.load(f)
             for file_name, file_info in self.__json_obj[FILE_CONST].items():
                 self.__files[file_name] = self.parse_covering_tests(file_info)
         except Exception as e:
@@ -28,5 +27,5 @@ class CoverageParserAndProcessor():
         return file_info
 
     @property
-    def get_file_names(self):
-        return self.__files.keys()
+    def coverage(self):
+        return self.__files
