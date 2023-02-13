@@ -1,5 +1,5 @@
 import argparse
-import coverage_map as CoverageMap
+import coverage_map
 import pathlib
 
 FROM_COVERAGE = "from_coverage"
@@ -24,8 +24,10 @@ def parse_args():
 
 def main(args: dict):
     coverage_file = args.get(FROM_COVERAGE)
-    if coverage_file:
-        print(CoverageMap.ParserAndProcessor(coverage_file).get_file_names)
+
+    cm = coverage_map.CoverageMapEngine(pathlib.Path(
+        "test_dir"), coverage_map.StorageMode.LOCAL, coverage_map.RetentionPolicy.KEEP_ALL, "", "")
+
 
 
 if __name__ == "__main__":
