@@ -6,6 +6,8 @@ from coverage_map.coverage_map_logger import get_logger
 
 logger = get_logger(__file__)
 
+TEST_LIST = "all_tests"
+
 
 class CoverageMapEngine():
 
@@ -19,13 +21,16 @@ class CoverageMapEngine():
             generator = Generator(pytest_args, coverage_args)
             generator.generate_coverage()
             self.coverage_map = generator.load_coverage()
+            self.coverage_map[TEST_LIST] = generator.load_tests(
+                self.coverage_map)
 
     def retrieve_coverage(self, coverage_dir: str):
         if self.storage_mode == SM.LOCAL:
-            if (storage := LocalStorage(coverage_dir, self.storage_retention_policy).has_map):
+            storage = LocalStorage(coverage_dir, self.storage_retention_policy)
+            if (storage.has_map):
                 return storage.map
         return None
-    
+
     def store_coverage(self, coverage_dir: str, coverage_map: dict):
         if self.storage_mode == SM.LOCAL:
             storage = LocalStorage(coverage_dir, self.storage_retention_policy)
@@ -39,4 +44,3 @@ class CoverageMapEngine():
             return False
         except AttributeError as e:
             self.coverage_map = None
-    
