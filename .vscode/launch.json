@@ -20,7 +20,7 @@
       "program": "test_impact_launcher.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["--from_coverage", "test_json.json"]
+      "args": ["--test-runner-args", "-m pytest"]
     }
   ]
 }
