@@ -22,9 +22,9 @@ class LocalCoverageMapStorage(CoverageMapStorage):
             self.validate_storage_location()
             glob = self.storage_location.rglob(
                 f'*{self.file_extension}')
-            glob_len = sum(1 for x in glob)
-            if glob_len > 0:
-                latest_file = max(glob, key=os.path.getctime)
+            globs = list(glob)
+            if len(globs) > 0:
+                latest_file = max(globs, key=lambda p: p.stat().st_ctime)
                 with open(latest_file, "rb") as f:
                     return json.load(f)
             else:
@@ -44,7 +44,7 @@ class LocalCoverageMapStorage(CoverageMapStorage):
                 json.dump(map, f)
             self.apply_storage_policy()
         except Exception as e:
-            logger.warning(f"Error {e}")
+            logger.warning(f"Error: {e}")
 
     def apply_storage_policy(self):
         if self.retention_policy == RP.KEEP_ALL:
