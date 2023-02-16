@@ -52,7 +52,7 @@ class CoverageGenerator():
 
     def load_test_node_ids(self, coverage_map):
         all_tests = []
-        result = subprocess.run("")
+        #result = subprocess.run("")
         if coverage_map:
             for file, contexts in coverage_map.items():
                 all_tests.extend(contexts)

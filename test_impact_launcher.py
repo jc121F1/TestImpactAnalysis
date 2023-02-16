@@ -4,10 +4,13 @@ import test_selection
 import test_prioritization
 import change_list_generator
 import pathlib
+import pprint
 
 FROM_COVERAGE = "from_coverage"
 TEST_RUNNER_ARGS = "test_runner_args"
 COVERAGE_ARGS = "coverage_args"
+INIT_COMMIT= "init_commit"
+FINAL_COMMIT = "final_commit"
 
 
 def parse_args():
@@ -34,6 +37,15 @@ def parse_args():
                         type=str,
                         help="Args to apply to coverage module if necessary.",
                         required=False)
+    
+    parser.add_argument("--init-commit",
+                        type=str,
+                        help="Initial commit that we will generate changes from.",
+                        required=False)
+    parser.add_argument("--final-commit",
+                        type=str,
+                        help="Final commit which we will generate changes from",
+                        required=False)
     return parser.parse_args()
 
 
@@ -43,13 +55,15 @@ def main(args: dict):
     coverage_file = args.get(FROM_COVERAGE)
     test_runner_args = args.get(TEST_RUNNER_ARGS)
     coverage_args = args.get(COVERAGE_ARGS)
+    init_commit = args.get(INIT_COMMIT)
+    final_commit = args.get(FINAL_COMMIT)
 
     # cm = coverage_map.CoverageMapEngine(pathlib.Path(
     #   "test_dir"), coverage_map.StorageMode.LOCAL, coverage_map.RetentionPolicy.KEEP_ALL, "", "")
 
     cg = change_list_generator.ChangeListGenerator(pathlib.Path.cwd())
     changelist = cg.get_changelist(
-        "080a2754a2add46d8b6bdea20be015a7f9583b71", "b2d0e5d6ee37d651bcd4da248397139d2e8fd8dd")
+        init_commit, final_commit)
     te = test_selection.TestSelectionEngine(changelist, test_selection.TestSelectionPolicy.SELECT_COVERING_TESTS, pathlib.Path(
         "coverage_dir"), test_runner_args, coverage_args)
     selected_tests = te.select_tests()
@@ -57,7 +71,7 @@ def main(args: dict):
     pe = test_prioritization.TestPrioritisationEngine(
         test_prioritization.TestPrioritisationPolicy.ALPHABETICAL)
     prioritised_list = pe.prioritise_tests(selected_tests)
-    print(prioritised_list)
+    pprint.pprint(prioritised_list)
 
 
 if __name__ == "__main__":

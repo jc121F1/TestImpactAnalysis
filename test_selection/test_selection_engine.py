@@ -29,8 +29,12 @@ class TestSelectionEngine:
             if self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_TESTS:
                 for changed_file in self.changelist:
                     try:
-                        tests_to_execute += coverage_map[changed_file.a_path]
-                    except KeyError as e:
+                        replaced = changed_file.a_path.replace("/","\\")
+                        if (coverage_data := coverage_map[replaced]):
+                            tests_to_execute += coverage_map[replaced]
+                        else:
+                            raise ValueError(f"No coverage data found for {replaced}")
+                    except (KeyError, ValueError) as e:
                         logger.warning(
                             f"File {changed_file.a_path} was changed but we have no coverage data available for this file. Executing all tests.")
                         tests_to_execute = coverage_map['all_tests']
@@ -39,7 +43,7 @@ class TestSelectionEngine:
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_ALL:
                 tests_to_execute = coverage_map['all_tests']
 
-                
+
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES:
                 # TODO: Select tests for dependencies
                 pass

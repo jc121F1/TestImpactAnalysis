@@ -21,8 +21,8 @@ class CoverageMapEngine():
             generator = Generator(pytest_args, coverage_args)
             generator.generate_coverage()
             self.coverage_map = generator.load_coverage()
-            #self.coverage_map[TEST_LIST] = generator.load_tests(
-            #    self.coverage_map)
+            self.coverage_map[TEST_LIST] = generator.load_test_node_ids(
+                self.coverage_map)
 
     def retrieve_coverage(self, coverage_dir: str):
         if self.storage_mode == SM.LOCAL:

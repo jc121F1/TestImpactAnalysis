@@ -14,13 +14,31 @@
     },
 
     {
-      "name": "Python: Launcher.py",
+      "name": "Python: Launcher.py Changelist Generator",
       "type": "python",
       "request": "launch",
       "program": "test_impact_launcher.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["--test-runner-args", "-m pytest"]
+      "args": ["--test-runner-args", "-m pytest", "--init-commit","080a2754a2add46d8b6bdea20be015a7f9583b71","--final-commit","b2d0e5d6ee37d651bcd4da248397139d2e8fd8dd"]
+    },
+    {
+      "name": "Python: Launcher.py Test Selection Engine",
+      "type": "python",
+      "request": "launch",
+      "program": "test_impact_launcher.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["--test-runner-args", "-m pytest", "--init-commit","7da750a9fd9702e68269768d381c0904a32b62af","--final-commit","4a4effbc9c2930ba15bb22556eeb06fda37b1b02"]
+    },
+    {
+      "name": "Python: Launcher.py All Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "test_impact_launcher.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["--test-runner-args", "-m pytest","--init-commit","a575d2522dc6cd4ea610cff743b00de649f000f9","--final-commit","7efb00c4fe353ae2b21899a2cd236e8a9840bbcd"]
     }
   ]
 }
