@@ -15,7 +15,6 @@ class LocalCoverageMapStorage(CoverageMapStorage):
     def __init__(self, storage_location: Path, retention_policy: RP):
         self.retention_policy = retention_policy
         self.storage_location = storage_location
-        self.map = self.load_map()
 
     def load_map(self):
         try:
@@ -26,7 +25,7 @@ class LocalCoverageMapStorage(CoverageMapStorage):
             if len(globs) > 0:
                 latest_file = max(globs, key=lambda p: p.stat().st_ctime)
                 with open(latest_file, "rb") as f:
-                    return json.load(f)
+                    self.map = json.load(f)
             else:
                 raise ValueError("No test impact files found")
         except json.JSONDecodeError as e:
@@ -36,7 +35,8 @@ class LocalCoverageMapStorage(CoverageMapStorage):
 
     def save_map(self, map: dict):
         try:
-            self.validate_storage_location()
+            if not self.storage_location.exists():
+                os.mkdir(self.storage_location)
             storage_file_path = self.storage_location.joinpath(Path(
                 f"{self.file_name}_{self.id}.{self.file_extension}"))
             with open(storage_file_path, "w+") as f:

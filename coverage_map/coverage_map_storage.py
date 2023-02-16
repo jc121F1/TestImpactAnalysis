@@ -5,17 +5,18 @@ from enum import Enum
 
 
 class RetentionPolicy(Enum):
-    KEEP_ALL = 1
-    KEEP_ONE = 2
-    KEEP_TEN = 3
+    KEEP_ALL = "keep_all"
+    KEEP_ONE = "keep_one"
+    KEEP_TEN = "keep_ten"
 
 
 class StorageMode(Enum):
-    LOCAL = 1
+    LOCAL = "local"
 
 
 class CoverageMapStorage(ABC):
-
+    
+    map = None
     file_extension = "testimpact"
     file_name = "test_impact_map"
 
