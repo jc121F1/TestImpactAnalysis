@@ -39,6 +39,7 @@ class TestSelectionEngine:
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_ALL:
                 tests_to_execute = coverage_map['all_tests']
 
+                
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES:
                 # TODO: Select tests for dependencies
                 pass
