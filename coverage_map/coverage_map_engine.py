@@ -6,7 +6,7 @@ from coverage_map.coverage_map_logger import get_logger
 
 logger = get_logger(__file__)
 
-TEST_LIST = "all_tests"
+TEST_LIST = "name_nodeid_map"
 
 
 class CoverageMapEngine():
@@ -15,26 +15,27 @@ class CoverageMapEngine():
         self.coverage_dir = coverage_dir
         self.storage_mode = storage_mode
         self.storage_retention_policy = storage_retention_policy
-        if (coverage := self.retrieve_coverage(coverage_dir)):
+        self.initialise_storage()
+        if (coverage := self.retrieve_coverage()):
             self.coverage_map = coverage
         else:
             generator = Generator(pytest_args, coverage_args)
             generator.generate_coverage()
             self.coverage_map = generator.load_coverage()
-            self.coverage_map[TEST_LIST] = generator.load_test_node_ids(
-                self.coverage_map)
-
-    def retrieve_coverage(self, coverage_dir: str):
+            self.coverage_map[TEST_LIST] = generator.load_test_info()
+            
+    def initialise_storage(self):
         if self.storage_mode == SM.LOCAL:
-            storage = LocalStorage(coverage_dir, self.storage_retention_policy)
-            if (storage.has_map):
-                return storage.map
+            self.storage = LocalStorage(self.coverage_dir, self.storage_retention_policy)
+
+    def retrieve_coverage(self):
+        self.storage.load_map()
+        if (self.storage.has_map):
+            return self.storage.map
         return None
 
-    def store_coverage(self, coverage_dir: str, coverage_map: dict):
-        if self.storage_mode == SM.LOCAL:
-            storage = LocalStorage(coverage_dir, self.storage_retention_policy)
-            storage.save_map(coverage_map)
+    def store_coverage(self, coverage_map: dict):
+        self.storage.save_map(coverage_map)
 
     @property
     def has_coverage(self):
