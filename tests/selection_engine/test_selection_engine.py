@@ -32,5 +32,6 @@ def test_valid_selection_inputs(mock_coverage_map):
         changelist, test_selection_policy, coverage_dir, test_runner_args, coverage_args)
     tests_to_execute = engine.select_tests()
 
+
     # Assert
     assert set(tests_to_execute) == set(['test1', 'test3'])
