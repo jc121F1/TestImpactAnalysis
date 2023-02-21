@@ -20,7 +20,16 @@
       "program": "test_impact_launcher.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["--test-runner-args", "-m pytest", "--init-commit","080a2754a2add46d8b6bdea20be015a7f9583b71","--final-commit","b2d0e5d6ee37d651bcd4da248397139d2e8fd8dd"]
+      "args": [
+        "--test-runner-args",
+        "-m pytest",
+        "--init-commit",
+        "080a2754a2add46d8b6bdea20be015a7f9583b71",
+        "--final-commit",
+        "b2d0e5d6ee37d651bcd4da248397139d2e8fd8dd",
+        "--storage-retention-policy",
+        "keep_one"
+      ]
     },
     {
       "name": "Python: Launcher.py Test Selection Engine",
@@ -29,7 +38,16 @@
       "program": "test_impact_launcher.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["--test-runner-args", "-m pytest", "--init-commit","7da750a9fd9702e68269768d381c0904a32b62af","--final-commit","4a4effbc9c2930ba15bb22556eeb06fda37b1b02"]
+      "args": [
+        "--test-runner-args",
+        "-m pytest",
+        "--init-commit",
+        "7da750a9fd9702e68269768d381c0904a32b62af",
+        "--final-commit",
+        "4a4effbc9c2930ba15bb22556eeb06fda37b1b02",
+        "--storage-retention-policy",
+        "keep_one"
+      ]
     },
     {
       "name": "Python: Launcher.py All Tests",
@@ -38,7 +56,33 @@
       "program": "test_impact_launcher.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["--test-runner-args", "-m pytest","--init-commit","a575d2522dc6cd4ea610cff743b00de649f000f9","--final-commit","7efb00c4fe353ae2b21899a2cd236e8a9840bbcd"]
+      "args": [
+        "--test-runner-args",
+        "-m pytest",
+        "--init-commit",
+        "a575d2522dc6cd4ea610cff743b00de649f000f9",
+        "--final-commit",
+        "7efb00c4fe353ae2b21899a2cd236e8a9840bbcd",
+        "--storage-retention-policy",
+        "keep_one"]
+    },
+    {
+      "name": "Python: Launcher.py Test modified",
+      "type": "python",
+      "request": "launch",
+      "program": "test_impact_launcher.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        "--test-runner-args",
+        "-m pytest",
+        "--init-commit",
+        "536e8c3eac27f19d56107a697a18e052e9baa1e4",
+        "--final-commit",
+        "30080be5539deddae2552b66bb32635bb41dc17d",
+        "--storage-retention-policy",
+        "keep_one"
+      ]
     }
   ]
 }

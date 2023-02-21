@@ -3,7 +3,7 @@ import os
 import uuid
 from git import NoSuchPathError, InvalidGitRepositoryError, DiffIndex, GitCommandError
 import pathlib
-from change_list_generator import ChangeListGenerator
+from changelist_generator.git_changelist_generator import ChangeListGenerator
 
 def test_init_generator_valid_file_path(test_repository):
     repo_obj = test_repository[0]

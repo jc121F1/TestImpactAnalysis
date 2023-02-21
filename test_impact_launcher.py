@@ -1,8 +1,11 @@
 import argparse
-from coverage_map.coverage_map_storage import StorageMode, RetentionPolicy
+from storage import StorageMode, RetentionPolicy
+from coverage_map import CoverageMapEngine
 from test_selection import TestSelectionEngine, TestSelectionPolicy
-from change_list_generator import ChangeListGenerator
+from changelist_generator import GitChangeListGenerator
 from pathlib import Path
+from test_runner.test_runner_engine import TestRunnerEngine
+from test_info_extractor import TestInformationExtractor
 import test_prioritization
 import pathlib
 import pprint
@@ -15,31 +18,21 @@ FINAL_COMMIT = "final_commit"
 TEST_SELECTION_POLICY = "test_selection_policy"
 STORAGE_MODE = "storage_mode"
 RETENTION_POLICY = "storage_retention_policy"
+COVERAGE_TARGET = "coverage_target"
 
 
 def parse_args():
 
-    def file(file_path):
-        if Path(file_path).is_file():
-            return file_path
-        else:
-            return ValueError("Error, file does not exist.")
-
     parser = argparse.ArgumentParser()
-
-    parser.add_argument("--from-coverage",
-                        type=file,
-                        help="Path a valid coverage json file to be used to seed maps",
-                        required=False)
 
     parser.add_argument("--test-runner-args",
                         type=str,
-                        help="Args to call your test runner to generate coverage",
+                        help="Args to call your test runner to generate coverage. Defaults to '-m pytest' which will run pytest with no additional arguments.",
                         required=False)
 
     parser.add_argument("--coverage-args",
                         type=str,
-                        help="Args to apply to coverage module if necessary.",
+                        help="Args to apply to coverage module if necessary. Defaults to empty",
                         required=False)
 
     parser.add_argument("--init-commit",
@@ -65,6 +58,11 @@ def parse_args():
                         help="Retention policy for test impact files: keep_all | keep_ten | keep_one.  Defaults to keep_all",
                         required=False)
 
+    parser.add_argument("--coverage-target",
+                        type=str,
+                        help="Folder to store test_impact files in. Does not need to exist. Defaults to 'current_working_dir/coverage_dir'",
+                        required=False)
+
     return parser.parse_args()
 
 
@@ -74,22 +72,35 @@ def main(args: dict):
         TEST_SELECTION_POLICY) or TestSelectionPolicy.SELECT_COVERING_TESTS
     storage_mode = args.pop(STORAGE_MODE) or StorageMode.LOCAL
     retention_policy = args.pop(RETENTION_POLICY) or RetentionPolicy.KEEP_ALL
-    coverage_file = args.get(FROM_COVERAGE) or ""
-    test_runner_args = args.get(TEST_RUNNER_ARGS) or ""
+    coverage_file = args.get(COVERAGE_TARGET) or Path("coverage_dir")
+    test_runner_args = args.get(TEST_RUNNER_ARGS) or "-m pytest"
     coverage_args = args.get(COVERAGE_ARGS) or ""
     init_commit = args.get(INIT_COMMIT) or ""
     final_commit = args.get(FINAL_COMMIT) or ""
 
-    cg = ChangeListGenerator(pathlib.Path.cwd())
+    cg = GitChangeListGenerator(pathlib.Path.cwd())
     changelist = cg.get_changelist(init_commit, final_commit)
-    te = TestSelectionEngine(changelist, test_selection_policy, Path(
-        "coverage_dir"), test_runner_args, coverage_args, storage_mode, retention_policy)
+
+    coverage_map_engine = CoverageMapEngine(
+        coverage_file, storage_mode, retention_policy, test_runner_args, coverage_args)
+    coverage_map_engine.generate_coverage()
+
+    coverage_map = coverage_map_engine.coverage_map
+    test_info = TestInformationExtractor().load_test_info()
+
+    te = TestSelectionEngine(
+        changelist, test_selection_policy, coverage_map_engine.coverage_map)
     selected_tests = te.select_tests()
+
     pe = test_prioritization.TestPrioritisationEngine(
         test_prioritization.TestPrioritisationPolicy.ALPHABETICAL)
+    
     prioritised_list = pe.prioritise_tests(selected_tests)
     pprint.pprint(prioritised_list)
-    te.store_coverage_map()
+
+    tr = TestRunnerEngine()
+    tr.execute_tests("", prioritised_list, coverage_map["name_nodeid_map"])
+    coverage_map_engine.store_coverage(coverage_map)
 
 
 if __name__ == "__main__":

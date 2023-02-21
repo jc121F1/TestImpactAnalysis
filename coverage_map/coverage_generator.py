@@ -50,15 +50,5 @@ class CoverageGenerator():
             return self.coverage_parser.coverage
         raise ValueError("Coverage file does not exist")
 
-    def load_test_info(self):
-        collector = NodeidsCollector()
-        pytest.main(['--collect-only', '-pno:terminal'], plugins=[collector])
-        return {item.originalname:item.nodeid for item in collector.nodeids}
-
     def __del__(self):
         self.delete_storage()
-
-
-class NodeidsCollector:
-    def pytest_collection_modifyitems(self, items):
-        self.nodeids = [item for item in items]

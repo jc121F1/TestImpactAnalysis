@@ -1,2 +1,2 @@
-from .test_selection_engine import *
-from .test_selection_logger import *
+from .test_selection_engine import TestSelectionEngine, TestSelectionPolicy
+from .test_selection_logger import get_logger
