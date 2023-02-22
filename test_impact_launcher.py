@@ -5,7 +5,7 @@ from test_selection import TestSelectionEngine, TestSelectionPolicy
 from changelist_generator import GitChangeListGenerator
 from pathlib import Path
 from test_runner.test_runner_engine import TestRunnerEngine
-from test_info_extractor import TestInformationExtractor
+from test_info_extractor import PyTestTestInformationExtractor
 import test_prioritization
 import pathlib
 import pprint
@@ -22,7 +22,6 @@ COVERAGE_TARGET = "coverage_target"
 
 
 def parse_args():
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--test-runner-args",
@@ -86,7 +85,7 @@ def main(args: dict):
     coverage_map_engine.generate_coverage()
 
     coverage_map = coverage_map_engine.coverage_map
-    test_info = TestInformationExtractor().load_test_info()
+    test_info = PyTestTestInformationExtractor().load_test_information()
 
     te = TestSelectionEngine(
         changelist, test_selection_policy, coverage_map_engine.coverage_map)
