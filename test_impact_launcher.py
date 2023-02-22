@@ -6,7 +6,7 @@ from changelist_generator import GitChangeListGenerator
 from pathlib import Path
 from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
-import test_prioritization
+from test_prioritization import TestPrioritisationEngine, TestPrioritisationPolicy
 import pathlib
 import pprint
 
@@ -94,7 +94,7 @@ def main(args: dict):
         TestPrioritisationPolicy.ALPHABETICAL)
     
     prioritised_list = pe.prioritise_tests(selected_tests)
-    pprint(prioritised_list)
+    pprint.pprint(prioritised_list)
 
     tr = PytestTestRunnerEngine()
     additive_coverage_map = tr.execute_tests("", "", prioritised_list, test_info)
