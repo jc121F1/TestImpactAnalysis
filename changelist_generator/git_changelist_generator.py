@@ -46,7 +46,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
                 diff = final_commit.diff(init_commit)
 
                 def extract_path_and_change_type(diff):
-                    return ChangeInfo(diff.a_path, diff.change_type)
+                    return ChangeInfo(diff.a_path.replace("/", "\\"), diff.change_type)
 
                 return list(map(extract_path_and_change_type, diff))
             else:

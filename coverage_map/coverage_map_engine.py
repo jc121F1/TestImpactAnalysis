@@ -1,5 +1,5 @@
 from pathlib import Path
-from coverage_map.coverage_generator import CoverageGenerator as Generator
+from coverage_map.coverage_generator import PytestCoverageGenerator as Generator
 from storage import LocalCoverageMapStorage as LocalStorage
 from storage import StorageMode as SM, RetentionPolicy as RP
 from .logger import get_logger

@@ -4,7 +4,7 @@ from coverage_map import CoverageMapEngine
 from test_selection import TestSelectionEngine, TestSelectionPolicy
 from changelist_generator import GitChangeListGenerator
 from pathlib import Path
-from test_runner.test_runner_engine import TestRunnerEngine
+from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
 import test_prioritization
 import pathlib
@@ -87,9 +87,8 @@ def main(args: dict):
     coverage_map = coverage_map_engine.coverage_map
     test_info = PyTestTestInformationExtractor().load_test_information()
 
-    te = TestSelectionEngine(
-        changelist, test_selection_policy, coverage_map_engine.coverage_map)
-    selected_tests = te.select_tests()
+    te = TestSelectionEngine(test_selection_policy)
+    selected_tests = te.select_tests(changelist, coverage_map, test_info)
 
     pe = test_prioritization.TestPrioritisationEngine(
         test_prioritization.TestPrioritisationPolicy.ALPHABETICAL)
@@ -97,8 +96,9 @@ def main(args: dict):
     prioritised_list = pe.prioritise_tests(selected_tests)
     pprint.pprint(prioritised_list)
 
-    tr = TestRunnerEngine()
-    tr.execute_tests("", prioritised_list, coverage_map["name_nodeid_map"])
+    tr = PytestTestRunnerEngine()
+    additive_coverage_map = tr.execute_tests("", "", prioritised_list, test_info)
+    coverage_map.update(additive_coverage_map)
     coverage_map_engine.store_coverage(coverage_map)
 
 

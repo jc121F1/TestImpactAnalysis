@@ -11,7 +11,7 @@ logger = get_logger(__file__)
 
 #TODO WE NEED TO COLLECT TESTS BETTER
 
-class CoverageGenerator(BaseCoverageGenerator):
+class PytestCoverageGenerator(BaseCoverageGenerator):
 
     def __init__(self, test_runner_args, coverage_args):
         self.create_storage()
