@@ -77,7 +77,7 @@ def main(args: dict):
     init_commit = args.get(INIT_COMMIT) or ""
     final_commit = args.get(FINAL_COMMIT) or ""
 
-    cg = GitChangeListGenerator(pathlib.Path.cwd())
+    cg = GitChangeListGenerator(Path.cwd())
     changelist = cg.get_changelist(init_commit, final_commit)
 
     coverage_map_engine = CoverageMapEngine(
@@ -90,11 +90,11 @@ def main(args: dict):
     te = TestSelectionEngine(test_selection_policy)
     selected_tests = te.select_tests(changelist, coverage_map, test_info)
 
-    pe = test_prioritization.TestPrioritisationEngine(
-        test_prioritization.TestPrioritisationPolicy.ALPHABETICAL)
+    pe = TestPrioritisationEngine(
+        TestPrioritisationPolicy.ALPHABETICAL)
     
     prioritised_list = pe.prioritise_tests(selected_tests)
-    pprint.pprint(prioritised_list)
+    pprint(prioritised_list)
 
     tr = PytestTestRunnerEngine()
     additive_coverage_map = tr.execute_tests("", "", prioritised_list, test_info)
