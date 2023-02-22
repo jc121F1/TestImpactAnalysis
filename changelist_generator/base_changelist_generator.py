@@ -21,5 +21,5 @@ class BaseChangeListGenerator(ABC):
         """
         pass
 
-    
+
 ChangeInfo = namedtuple("ChangeInfo", ["path","change_type"])

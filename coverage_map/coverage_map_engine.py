@@ -2,7 +2,7 @@ from pathlib import Path
 from coverage_map.coverage_generator import CoverageGenerator as Generator
 from storage import LocalCoverageMapStorage as LocalStorage
 from storage import StorageMode as SM, RetentionPolicy as RP
-from coverage_map.coverage_map_logger import get_logger
+from .logger import get_logger
 
 logger = get_logger(__file__)
 

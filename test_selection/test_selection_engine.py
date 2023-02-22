@@ -51,7 +51,7 @@ class TestSelectionEngine:
                         f"No coverage data found for {replaced}")
             except (KeyError, ValueError) as e:
                 logger.warning(
-                    f"File {changed_file.a_path} was changed but we have no coverage data available for this file. Executing all tests.")
+                    f"File {changed_file.path} was changed but we have no coverage data available for this file. Executing all tests.")
                 return test_info.keys()
         return tests_to_execute
     

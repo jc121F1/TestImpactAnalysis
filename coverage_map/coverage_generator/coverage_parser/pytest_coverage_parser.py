@@ -1,3 +1,4 @@
+from .base_coverage_parser import BaseCoverageParserAndProcessor
 import json
 import pathlib
 
@@ -6,7 +7,7 @@ COV_TEST_CONST = 'covering_tests'
 CONTEXTS = "contexts"
 
 
-class CoverageParserAndProcessor():
+class CoverageParserAndProcessor(BaseCoverageParserAndProcessor):
     __json_obj = {}
     __files = {}
     __coverage_data = {}

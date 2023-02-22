@@ -1,7 +1,7 @@
 import pytest
 from git import Repo, DiffIndex
 from pathlib import Path
-from changelist_generator.git_changelist_generator import ChangeListGenerator
+from changelist_generator.git_changelist_generator import GitChangeListGenerator
 from test_selection import TestSelectionEngine, TestSelectionPolicy
 import os
 import shutil

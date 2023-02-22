@@ -1,17 +1,17 @@
+
+from .coverage_parser import CoverageParserAndProcessor as Parser
+from .base_coverage_generator import BaseCoverageGenerator
+from .logger import get_logger
 import subprocess
-from coverage_map.coverage_parser import CoverageParserAndProcessor as Parser
-from coverage_map.coverage_map_logger import get_logger
-import xml.etree.ElementTree as ET
 from pathlib import Path
 import shutil
 import os
-import pytest
 
 logger = get_logger(__file__)
 
 #TODO WE NEED TO COLLECT TESTS BETTER
 
-class CoverageGenerator():
+class CoverageGenerator(BaseCoverageGenerator):
 
     def __init__(self, test_runner_args, coverage_args):
         self.create_storage()
