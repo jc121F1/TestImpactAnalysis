@@ -1,8 +1,5 @@
 from git import DiffIndex
 from enum import Enum
-from pathlib import Path
-from storage.storage_base_class import StorageMode, RetentionPolicy
-from coverage_map import CoverageMapEngine
 from .test_selection_logger import get_logger
 
 logger = get_logger(__file__)

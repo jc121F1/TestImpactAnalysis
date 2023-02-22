@@ -1,5 +1,4 @@
 import pytest
-from collections import namedtuple
 from .base_test_info_extractor import BaseTestInformationExtractor, TestInfo
 
 
