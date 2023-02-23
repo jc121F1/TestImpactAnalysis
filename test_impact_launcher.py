@@ -7,6 +7,7 @@ from pathlib import Path
 from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
 from test_prioritization import TestPrioritisationEngine, TestPrioritisationPolicy
+from test_impact_logger import get_logger
 import pathlib
 import pprint
 
@@ -20,6 +21,7 @@ STORAGE_MODE = "storage_mode"
 RETENTION_POLICY = "storage_retention_policy"
 COVERAGE_TARGET = "coverage_target"
 
+logger = get_logger(__file__)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -89,15 +91,19 @@ def main(args: dict):
 
     te = TestSelectionEngine(test_selection_policy)
     selected_tests = te.select_tests(changelist, coverage_map, test_info)
+    selected_tests_string = '\n'.join(selected_tests)
+    logger.info(
+        f"The following tests have been selected by Test Impact Analysis:")
+    for test in selected_tests:
+        logger.info(test)
 
     pe = TestPrioritisationEngine(
         TestPrioritisationPolicy.ALPHABETICAL)
     
     prioritised_list = pe.prioritise_tests(selected_tests)
-    pprint.pprint(prioritised_list)
-
     tr = PytestTestRunnerEngine()
-    additive_coverage_map = tr.execute_tests("", "", prioritised_list, test_info)
+    additive_coverage_map, return_code = tr.execute_tests("", "", prioritised_list, test_info)
+    logger.info(f"Test execution concluded with returncode {return_code}")
     coverage_map.update(additive_coverage_map)
     coverage_map_engine.store_coverage(coverage_map)
 
