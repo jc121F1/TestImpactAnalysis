@@ -36,13 +36,10 @@ class TestSelectionEngine:
             try:
                 if (coverage_data := coverage_map[changed_file.path]):
                     tests_to_execute += coverage_data
-                else:
-                    raise ValueError(
-                        f"No coverage data found for {changed_file.path}")
-            except (KeyError, ValueError) as e:
+            except (KeyError) as e:
                 logger.warning(
                     f"File {changed_file.path} was changed but we have no coverage data available for this file. Executing all tests.")
-                return test_info.keys()
+                return list(test_info.keys())
         return tests_to_execute
 
     def select_covering_tests_and_dependencies(self, coverage_map, test_info):
