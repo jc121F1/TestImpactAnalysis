@@ -6,34 +6,73 @@ from test_selection import TestSelectionEngine, TestSelectionPolicy
 import os
 import shutil
 from unittest import mock
+from collections import namedtuple
 import coverage_map
 
-class MockObj(object):
-    pass
+class TestSelectCoveringTests:
+    ChangedFile = namedtuple('ChangedFile', ['path', 'change_type'])
 
-@mock.patch('coverage_map.CoverageMapEngine')
-def test_valid_selection_inputs(mock_coverage_map):
-    # Setup
-    changelist = []
-    file1 = MockObj()
-    file1.a_path = "file1.py"
-    changelist.append(file1)
-    
-    test_selection_policy = TestSelectionPolicy.SELECT_COVERING_TESTS
-    coverage_dir = Path('/path/to/coverage_dir')
-    test_runner_args = 'some test runner args'
-    coverage_args = 'some coverage args'
-    storage_mode = coverage_map.coverage_map_storage.StorageMode.LOCAL
-    retention_policy = coverage_map.coverage_map_storage.RetentionPolicy.KEEP_ALL
-    mock_coverage_map_engine = mock_coverage_map.return_value
-    mock_coverage_map_engine.coverage_map = {'all_tests': [
-        'test1', 'test2','test3',], 'file1.py': ['test1', 'test3'], 'file2.py': ['test2'], 'file3.py' : []}
+    def test_select_covering_tests_for_existing_coverage_data(self):
+        # Setup
+        changelist = [self.ChangedFile(path='file1.py', change_type='M'), self.ChangedFile(
+            path='file2.py', change_type='M')]
+        coverage_map = {'file1.py': [
+            'test_file1.py'], 'file2.py': ['test_file2.py']}
+        test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
+            'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
+        te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
 
-    # Test
-    engine = TestSelectionEngine(
-        changelist, test_selection_policy, coverage_dir, test_runner_args, coverage_args, storage_mode, retention_policy)
-    tests_to_execute = engine.select_tests()
+        # Execution
+        selected_tests = te.select_covering_tests(
+            changelist, coverage_map, test_info)
 
+        # Assertion
+        assert selected_tests == ['test_file1.py', 'test_file2.py']
 
-    # Assert
-    assert set(tests_to_execute) == set(['test1', 'test3'])
+    def test_select_covering_tests_for_missing_coverage_data(self):
+        # Setup
+        changelist = [self.ChangedFile(path='file1.py', change_type='M'), self.ChangedFile(
+            path='file2.py', change_type='M')]
+        coverage_map = {'file1.py': [
+            'test_file1.py'], 'file3.py': ['test_file3.py']}
+        test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
+            'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
+        te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
+
+        # Execution
+        selected_tests = te.select_covering_tests(
+            changelist, coverage_map, test_info)
+
+        # Assertion
+        assert selected_tests == list(test_info.keys())
+
+    def test_select_covering_tests_for_missing_coverage_map_data(self):
+        # Setup
+        changelist = [self.ChangedFile(path='file1.py', change_type='M'), self.ChangedFile(
+            path='file2.py', change_type='M')]
+        coverage_map = {'file1.py': ['test_file1.py']}
+        test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
+            'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
+        te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
+
+        # Execution
+        selected_tests = te.select_covering_tests(
+            changelist, coverage_map, test_info)
+
+        # Assertion
+        assert selected_tests == ['test_file1.py', 'test_file2.py', 'test_file3.py']
+
+    def test_select_covering_tests_for_missing_changelist_data(self):
+        # Setup
+        changelist = []
+        coverage_map = {'file1.py': ['test_file1.py']}
+        test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
+            'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
+        te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
+
+        # Execution
+        selected_tests = te.select_covering_tests(
+            changelist, coverage_map, test_info)
+
+        # Assertion
+        assert selected_tests == []
