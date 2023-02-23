@@ -25,9 +25,9 @@ class PytestTestRunnerEngine(BaseTestRunnerEngine):
 
         coverage_generator = PytestCoverageGenerator(
             test_execution_command, coverage_arguments)
-        coverage_generator.generate_coverage()
+        completed_process = coverage_generator.generate_coverage()
         result = coverage_generator.load_coverage()
-        return result
+        return (result, completed_process.returncode)
         
 
     def extract_test_nodeids(self, test_info, tests_to_run):
