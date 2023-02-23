@@ -43,6 +43,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
             f"coverage json --data-file={self.coverage_file} -o {self.report_file} --show-contexts", stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         logger.info(
             f"Converting coverage report to JSON returned with ExitCode: {report_result.returncode}")
+        return coverage_result
 
     def load_coverage(self):
         if self.coverage_file.exists():
