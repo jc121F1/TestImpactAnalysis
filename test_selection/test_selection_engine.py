@@ -1,5 +1,8 @@
-from git import DiffIndex
 from enum import Enum
+from pathlib import Path
+import re
+import pkgutil
+import modulefinder
 from .test_selection_logger import get_logger
 
 logger = get_logger(__file__)
@@ -16,7 +19,7 @@ class TestSelectionEngine:
     def __init__(self, test_selection_policy: TestSelectionPolicy):
         self.test_selection_mode = test_selection_policy
 
-    def select_tests(self, changelist: list, coverage_map: map, test_info: list):
+    def select_tests(self, changelist: list, coverage_map: map, test_info: list, source_directories=[], library_directories=[]):
         tests_to_execute = []
         if self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_TESTS:
             tests_to_execute = self.select_covering_tests(
@@ -25,8 +28,7 @@ class TestSelectionEngine:
             tests_to_execute = test_info.keys()
         elif self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES:
             tests_to_execute = self.select_covering_tests_and_dependencies(
-                self.coverage_map, test_info)
-            pass
+                changelist, coverage_map, test_info, source_directories, library_directories)
 
         return list(set(tests_to_execute))
 
@@ -42,5 +44,61 @@ class TestSelectionEngine:
                 return list(test_info.keys())
         return tests_to_execute
 
-    def select_covering_tests_and_dependencies(self, coverage_map, test_info):
-        pass
+    def select_covering_tests_and_dependencies(self, changelist, coverage_map, test_info, source_directories, library_directories):
+        if not source_directories:
+            logger.warning(
+                "Source directories were not provided, select covering tests and dependencies policy may not be accurately selecting dependencies.")
+
+        if not library_directories:
+            logger.warning(
+                "Library directories were not provided, select covering tests and depdencies policy may not be accurately selecting dependencies and may take an excessive amount of time.")
+
+        library_directories = [
+            "C:\\Users\\Jack\Desktop\\TestImpactAnalysis\\venv\\site-packages"]
+
+        def get_modules_in_directory(directory):
+            """Returns a list of module names in the specified directory. Explores packages and imports all modules of a package"""
+            modules = []
+            for importer, name, ispkg in pkgutil.iter_modules([directory]):
+                if not ispkg:
+                    modules.append(name)
+                else:
+                    full_path = f"{directory}/{name}"
+                    submodules = get_modules_in_directory(full_path)
+                    for submodule in submodules:
+                        modules.append(f"{name}.{submodule}")
+            return modules
+
+        lib_modules = []
+        for lib_dir in library_directories:
+            lib_modules.extend(get_modules_in_directory(lib_dir))
+
+        import_map = {}
+        mf = modulefinder.ModuleFinder(
+            source_directories, excludes=lib_modules)
+
+
+        def get_module_file_relative_to_cwd(module_pair):
+            path = module_pair[1].__file__
+            if path:
+                return Path(path).relative_to(Path.cwd())
+            return None
+
+        for file in Path.cwd().rglob("*.py"):
+            skip = False
+            for dir in library_directories:
+                if file.is_relative_to(dir):
+                    skip = True
+            if not skip:
+                mf.run_script(str(file))
+                modules = map(get_module_file_relative_to_cwd, mf.modules.items())
+                import_map[str(file)] = modules
+
+        dependencies = []
+
+        for changed_file in changelist:
+            for file, modules in import_map.items():
+                if changed_file in modules:
+                    dependencies.append(file)
+
+        return dependencies
