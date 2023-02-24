@@ -2,7 +2,7 @@ import argparse
 from storage import StorageMode, RetentionPolicy
 from coverage_map import CoverageMapEngine
 from test_selection import TestSelectionEngine, TestSelectionPolicy
-from changelist_generator import GitChangeListGenerator
+from changelist_generator import GitChangeListGenerator, ChangeInfo
 from pathlib import Path
 from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
@@ -20,7 +20,8 @@ TEST_SELECTION_POLICY = "test_selection_policy"
 STORAGE_MODE = "storage_mode"
 RETENTION_POLICY = "storage_retention_policy"
 COVERAGE_TARGET = "coverage_target"
-SOURCE_DIR = "source_directory"
+SOURCE_DIR = "source_directories"
+LIB_DIR = "library_directories"
 
 logger = get_logger(__file__)
 
@@ -28,12 +29,13 @@ logger = get_logger(__file__)
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    def isfolder(value):
-        if pathlib.Path(value).is_dir():
-            return True
-        else:
-            raise ValueError(
-                f"Error, given argument {value} is not a directory.")
+    def listoffolders(value):
+        l = value.replace(" ", "").split(",")
+        for entry in l:
+            if not pathlib.Path(value).is_dir():
+                raise ValueError(
+                    f"Error, given argument {value} is not a directory.")
+        return l
 
     parser.add_argument("--test-runner-args",
                         type=str,
@@ -74,9 +76,14 @@ def parse_args():
                         help="Folder to store test_impact files in. Does not need to exist. Defaults to 'current_working_dir/coverage_dir'",
                         required=False)
 
-    parser.add_argument("--source-directory",
-                        type=isfolder,
-                        help="Folder that contains source files to scan for dependencies when using the \"select covering and dependencies\" test selection policy",
+    parser.add_argument("--source-directories",
+                        type=listoffolders,
+                        help="Comma seperated list of folders that contains source files to scan for dependencies when using the \"select covering and dependencies\" test selection policy",
+                        required=False)
+
+    parser.add_argument("--library-directories",
+                        type=listoffolders,
+                        help="Comma seperated list of folders that contain library files to exclude when scanning for dependencies. \nPlease include any virtual environment files. For use when using the \"select covering and dependencies\" test selection policy",
                         required=False)
 
     return parser.parse_args()
@@ -93,7 +100,8 @@ def main(args: dict):
     coverage_args = args.get(COVERAGE_ARGS) or ""
     init_commit = args.get(INIT_COMMIT) or ""
     final_commit = args.get(FINAL_COMMIT) or ""
-    source_directory = args.get(SOURCE_DIR) or ""
+    source_directories = args.get(SOURCE_DIR) or [""]
+    library_directories = args.get(LIB_DIR) or [""]
 
     cg = GitChangeListGenerator(Path.cwd())
     changelist = cg.get_changelist(init_commit, final_commit)
@@ -106,8 +114,9 @@ def main(args: dict):
     test_info = PyTestTestInformationExtractor().load_test_information()
 
     te = TestSelectionEngine(test_selection_policy)
+
     selected_tests = te.select_tests(
-        changelist, coverage_map, test_info, source_directory)
+        changelist, coverage_map, test_info, source_directories, library_directories)
     selected_tests_string = '\n'.join(selected_tests)
     logger.info(
         f"The following tests have been selected by Test Impact Analysis:")
