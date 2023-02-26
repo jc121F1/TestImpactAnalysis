@@ -54,7 +54,7 @@ class TestSelectionEngine:
                 "Library directories were not provided, select covering tests and depdencies policy may not be accurately selecting dependencies and may take an excessive amount of time.")
 
         library_directories = [
-            "C:\\Users\\Jack\Desktop\\TestImpactAnalysis\\venv\\site-packages"]
+            "venv\Lib\site-packages"]
 
         def get_modules_in_directory(directory):
             """Returns a list of module names in the specified directory. Explores packages and imports all modules of a package"""
@@ -87,7 +87,9 @@ class TestSelectionEngine:
         for file in Path.cwd().rglob("*.py"):
             skip = False
             for dir in library_directories:
-                if file.is_relative_to(dir):
+                dir_p = Path(dir).resolve()
+                file_p = file.resolve()
+                if file_p.is_relative_to(dir_p):
                     skip = True
             if not skip:
                 mf.run_script(str(file))
@@ -97,8 +99,10 @@ class TestSelectionEngine:
         dependencies = []
 
         for changed_file in changelist:
+            p = Path(changed_file.path)
             for file, modules in import_map.items():
-                if changed_file in modules:
+                m = list(modules)
+                if p in m:
                     dependencies.append(file)
 
         return dependencies
