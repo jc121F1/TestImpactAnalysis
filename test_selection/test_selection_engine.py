@@ -27,8 +27,11 @@ class TestSelectionEngine:
         elif self.test_selection_mode == TestSelectionPolicy.SELECT_ALL:
             tests_to_execute = test_info.keys()
         elif self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES:
-            tests_to_execute = self.select_covering_tests_and_dependencies(
-                changelist, coverage_map, test_info, source_directories, library_directories)
+            logger.warning("Covering and dependencies policy not enabled, selecting all tests")
+            tests_to_execute = test_info.keys()
+
+            #tests_to_execute = self.select_covering_tests_and_dependencies(
+            #    changelist, coverage_map, test_info, source_directories, library_directories)
 
         return list(set(tests_to_execute))
 
