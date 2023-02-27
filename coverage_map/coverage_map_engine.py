@@ -13,12 +13,13 @@ class CoverageMapEngine():
 
     coverage_map = {}
 
-    def __init__(self, coverage_dir: Path, storage_mode: SM, storage_retention_policy: RP, test_runner_args, coverage_args):
+    def __init__(self, coverage_dir: Path, storage_mode: SM, storage_retention_policy: RP, generator_class, test_runner_args, coverage_args):
         self.coverage_dir = coverage_dir
         self.storage_mode = storage_mode
         self.storage_retention_policy = storage_retention_policy
         self.test_runner_args = test_runner_args
         self.coverage_args = coverage_args
+        self.generator_class = generator_class
         self.initialise_storage()
 
     def initialise_storage(self):
@@ -39,7 +40,7 @@ class CoverageMapEngine():
         if (coverage := self.retrieve_coverage()):
             self.coverage_map = coverage
         else:
-            generator = Generator(self.test_runner_args, self.coverage_args)
+            generator = self.generator_class(self.test_runner_args, self.coverage_args)
             generator.generate_coverage()
             self.coverage_map = generator.load_coverage()
 
