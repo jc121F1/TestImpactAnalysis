@@ -1,6 +1,9 @@
 from git import Repo, Commit, Diff, GitError, NoSuchPathError, InvalidGitRepositoryError, GitCommandError
 from pathlib import Path
 from changelist_generator import BaseChangeListGenerator, ChangeInfo
+from .test_impact_logger import get_logger
+
+logger = get_logger(__file__)
 
 
 class GitChangeListGenerator(BaseChangeListGenerator):
@@ -19,7 +22,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         try:
             self.repo = Repo(path)
         except (NoSuchPathError, InvalidGitRepositoryError) as e:
-            print("An exception occured, it is as follows:  {e}")
+            logger.error("An exception occured, it is as follows:  {e}")
             raise e
 
     def get_changelist(self, initial_commit_id, final_commit_id):
@@ -40,9 +43,9 @@ class GitChangeListGenerator(BaseChangeListGenerator):
             if self.initial_commit_is_before_final_commit(initial_commit_id, final_commit_id):
 
                 init_commit = self.repo.commit(initial_commit_id)
-                print(f"Selecting init_commit as : {init_commit}")
+                logger.info(f"Selecting init_commit as : {init_commit}")
                 final_commit = self.repo.commit(final_commit_id)
-                print(f"Selecting final commit as : {final_commit}")
+                logger.info(f"Selecting final commit as : {final_commit}")
                 diff = final_commit.diff(init_commit)
 
                 def extract_path_and_change_type(diff):
@@ -53,8 +56,8 @@ class GitChangeListGenerator(BaseChangeListGenerator):
                 raise ValueError(
                     "Initial commit occurs after final commit. This is an invalid configuration for generating a changelist.")
         except (Exception, GitCommandError) as e:
-            print(f"An exception occured, it is as follows:  {e}")
-            raise e
+            logger.error(f"An exception occured, it is as follows:  {e}")
+            raise ValueError(" An error occurred during changelist generator, execution cannot proceed.")
 
     def initial_commit_is_before_final_commit(self, initial_commit_id, final_commit_id):
         """
@@ -67,6 +70,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         Returns:
             Bool: Is the commit referred to by initial_commit_id is an ancestor of final_commit_id, true or false.
         """
+
         return self.repo.is_ancestor(initial_commit_id, final_commit_id)
 
     def __del__(self):
