@@ -33,6 +33,7 @@ class CoverageParserAndProcessor(BaseCoverageParserAndProcessor):
                     file_info)
         except Exception as e:
             logger.error(e)
+            raise e
 
     def parse_covering_tests(self, file_info):
         """ Parse our coverage data and return a set of all the tests that cover this file.

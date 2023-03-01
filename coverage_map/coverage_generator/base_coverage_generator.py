@@ -14,7 +14,6 @@ class BaseCoverageGenerator(ABC):
             test_runner_args (List[String]): List of arguments to pass through to our coverage tool.
             coverage_args (List[String]): List of arguments to pass through to the test runner we use to run tests and generate coverage.
         """
-        pass
 
     @abstractclassmethod
     def generate_coverage(self):
