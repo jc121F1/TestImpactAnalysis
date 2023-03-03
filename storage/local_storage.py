@@ -46,6 +46,13 @@ class LocalCoverageMapStorage(BaseCoverageMapStorage):
             logger.warning(f"Error: {e}")
 
     def apply_storage_policy(self):
+        """
+        Apply the retention policy in self.retention policy.
+
+        KEEP_ALL = Keep all files in self.storage_location
+        KEEP_ONE = Keep latest file in self.storage_location
+        KEEP_TEN = Keep last ten files in self.storage_location
+        """
         if self.retention_policy == RP.KEEP_ALL:
             pass
         elif self.retention_policy == RP.KEEP_ONE:
@@ -62,11 +69,26 @@ class LocalCoverageMapStorage(BaseCoverageMapStorage):
 
     @property
     def has_map(self):
+        """
+        Returns if self.map is not None.
+
+        Returns:
+            Boolean : True if self.map is not None, else False
+        """
         if self.map:
             return True
         return False
 
     def validate_storage_location(self):
+        """
+        Function returns whether the folder in self.storage_location exists.
+
+        Raises:
+            ValueError: Raised if self.storage_location doesn't exist
+
+        Returns:
+            Boolean: True if location exists, else raises a ValueError
+        """
         if (self.storage_location.exists()):
             return True
         raise ValueError(f"Folder {self.storage_location} does not exist.")

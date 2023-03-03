@@ -1,10 +1,8 @@
 from enum import Enum
-import pytest
-
 
 class TestPrioritisationPolicy(Enum):
-    ALPHABETICAL = 1
-    BY_CHANGE_PERCENTAGE = 2
+    ALPHABETICAL = "Alphabetical"
+    BY_CHANGE_PERCENTAGE = "By change percentage"
 
 
 class TestPrioritisationEngine():
@@ -18,3 +16,5 @@ class TestPrioritisationEngine():
     def prioritise_tests(self, selected_tests: list):
         if self.prioritisation_policy == TestPrioritisationPolicy.ALPHABETICAL:
             return sorted(selected_tests)
+        else:
+            raise ValueError(f"Policy {self.prioritisation_policy} not currently supported")

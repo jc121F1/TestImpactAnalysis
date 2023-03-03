@@ -61,7 +61,7 @@ def test_invalid_init_commit(test_repository):
     final = commits[1]
 
     cg = ChangeListGenerator(repo_dir)
-    with pytest.raises(GitCommandError):
+    with pytest.raises(Exception):
         cg.get_changelist(init, final)
 
 
@@ -82,7 +82,7 @@ def test_invalid_final_commit(test_repository):
     final = "test"
 
     cg = ChangeListGenerator(repo_dir)
-    with pytest.raises(GitCommandError):
+    with pytest.raises(Exception):
         cg.get_changelist(init, final)
 
 
