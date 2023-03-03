@@ -16,6 +16,16 @@ class LocalCoverageMapStorage(BaseCoverageMapStorage):
         self.storage_location = storage_location
 
     def load_map(self):
+        """
+        Loads the latest coverage map from the storage location specified during object initialization.
+
+        Raises:
+            ValueError: If no coverage maps are found in the storage location.
+
+        Returns:
+            None
+
+        """
         try:
             self.validate_storage_location()
             glob = self.storage_location.rglob(
@@ -33,6 +43,18 @@ class LocalCoverageMapStorage(BaseCoverageMapStorage):
             logger.warning(f"Error: {e}")
 
     def save_map(self, map: dict):
+        """
+        Saves a dictionary to a file in the storage location specified during object initialization.
+
+        Args:
+            map (dict): A dictionary representing the coverage map to be saved.
+
+        Raises:
+            Exception: If any error occurs while saving the file.
+
+        Returns:
+            None
+        """
         try:
             if not self.storage_location.exists():
                 os.mkdir(self.storage_location)
