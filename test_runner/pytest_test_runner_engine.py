@@ -22,7 +22,7 @@ class PytestTestRunnerEngine(BaseTestRunnerEngine):
 
         test_execution_command = self.form_execution_command(
             execution_arguments, self.extract_test_nodeids(test_info, tests_to_run))
-
+        
         coverage_generator = PytestCoverageGenerator(
             test_execution_command, coverage_arguments)
         completed_process = coverage_generator.generate_coverage()

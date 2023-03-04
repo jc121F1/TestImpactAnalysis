@@ -21,8 +21,6 @@
       "console": "integratedTerminal",
       "justMyCode": true,
       "args": [
-        "--test-runner-args",
-        "-m pytest",
         "--init-commit",
         "080a2754a2add46d8b6bdea20be015a7f9583b71",
         "--final-commit",

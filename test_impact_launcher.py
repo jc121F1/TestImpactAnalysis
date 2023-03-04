@@ -145,7 +145,7 @@ def main(args: dict):
 
     # Generate coverage map or load it from memory
     coverage_map_engine = CoverageMapEngine(
-        coverage_file, storage_mode, test_generator_class, retention_policy, test_runner_args, coverage_args)
+        coverage_file, storage_mode, retention_policy, test_generator_class, test_runner_args, coverage_args)
     coverage_map_engine.generate_coverage()
 
     coverage_map = coverage_map_engine.coverage_map
@@ -155,6 +155,7 @@ def main(args: dict):
     test_engine = TestSelectionEngine(test_selection_policy)
     selected_tests = test_engine.select_tests(
         changelist, coverage_map, test_info, source_directories, library_directories)
+    logger.info(f"{len(selected_tests)} tests have been selected.")
     logger.info(
         f"The following tests have been selected by Test Impact Analysis:")
     pretty_print_list(selected_tests)
@@ -170,6 +171,8 @@ def main(args: dict):
     logger.info(f"Test execution concluded with returncode {return_code}")
     coverage_map.update(additive_coverage_map)
     coverage_map_engine.store_coverage(coverage_map)
+
+    sys.exit(return_code)
 
 
 def generate_changelist(changelist_generator_class, init_commit, final_commit):
