@@ -8,7 +8,7 @@ logger = get_logger(__file__)
 class PytestTestRunnerEngine(BaseTestRunnerEngine):
 
     def form_execution_command(self, execution_arguments, tests_to_run):
-        return "-m pytest " + execution_arguments + " " + " ".join(tests_to_run)
+        return execution_arguments + " " + " ".join(tests_to_run)
 
     def execute_tests(self, execution_arguments, coverage_arguments, tests_to_run, test_info):
         """ Execute all the tests in tests to run, feeding in the arguments in execution arguments to our test runner. Generate coverage of these tests and return this data.
