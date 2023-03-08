@@ -32,6 +32,8 @@ class TestSelectionEngine:
 
             #tests_to_execute = self.select_covering_tests_and_dependencies(
             #    changelist, coverage_map, test_info, source_directories, library_directories)
+        else:
+            raise ValueError("Provided policy does not exist.")
 
         return list(set(tests_to_execute))
 
