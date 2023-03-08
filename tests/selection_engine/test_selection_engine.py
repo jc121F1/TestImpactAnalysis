@@ -88,3 +88,20 @@ class TestSelectCoveringTests:
         with pytest.raises(ValueError):
             selected_tests = te.select_tests(
                 changelist, coverage_map, test_info)
+            
+    def test_select_all_policy(self):
+        changelist = [self.ChangedFile(path='file1.py', change_type='M'), self.ChangedFile(
+            path='file2.py', change_type='M')]
+        coverage_map = {'file1.py': [
+            'test_file1.py'], 'file2.py': ['test_file2.py']}
+        test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
+            'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
+
+        te = TestSelectionEngine(TestSelectionPolicy.SELECT_ALL)
+
+        # Execution
+        selected_tests = te.select_tests(
+            changelist, coverage_map, test_info)
+
+        # Assertion
+        assert sorted(selected_tests) == list(test_info.keys())
