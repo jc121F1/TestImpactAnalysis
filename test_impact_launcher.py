@@ -130,7 +130,7 @@ def main(args: dict):
     # Generate changelist
     try:
         changelist_generator_class = get_changelist_specific_tooling(
-            changelist_generator_type)
+            changelist_generator_type)(Path.cwd())
         changelist = generate_changelist(
             changelist_generator_class, init_commit, final_commit)
     except Exception as e:
