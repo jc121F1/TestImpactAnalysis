@@ -56,6 +56,8 @@ class CoverageMapEngine():
         if self.storage_mode == SM.LOCAL:
             self.storage = LocalStorage(
                 self.coverage_dir, self.storage_retention_policy)
+        else:
+            raise ValueError("Selected storage mode is not implemented. Check again.")
 
     def retrieve_coverage(self):
         """
