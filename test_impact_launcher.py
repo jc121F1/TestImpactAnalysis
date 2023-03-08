@@ -176,7 +176,6 @@ def main(args: dict):
 
 
 def generate_changelist(changelist_generator_class, init_commit, final_commit):
-    print(Path.cwd())
     cg = changelist_generator_class(Path.cwd())
     return cg.get_changelist(init_commit, final_commit)
 
