@@ -21,6 +21,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         """
         try:
             self.repo = Repo(path)
+            print(self.repo.working_tree_dir)
         except (NoSuchPathError, InvalidGitRepositoryError) as e:
             logger.error("An exception occured, it is as follows:  {e}")
             raise e
