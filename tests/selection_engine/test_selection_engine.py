@@ -23,11 +23,11 @@ class TestSelectCoveringTests:
         te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
 
         # Execution
-        selected_tests = te.select_covering_tests(
+        selected_tests = te.select_tests(
             changelist, coverage_map, test_info)
 
         # Assertion
-        assert selected_tests == ['test_file1.py', 'test_file2.py']
+        assert sorted(selected_tests) == sorted(['test_file1.py', 'test_file2.py'])
 
     def test_select_covering_tests_for_missing_coverage_data(self):
         # Setup
@@ -40,11 +40,11 @@ class TestSelectCoveringTests:
         te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
 
         # Execution
-        selected_tests = te.select_covering_tests(
+        selected_tests = te.select_tests(
             changelist, coverage_map, test_info)
 
         # Assertion
-        assert selected_tests == list(test_info.keys())
+        assert sorted(selected_tests) == sorted(list(test_info.keys()))
 
     def test_select_covering_tests_for_missing_coverage_map_data(self):
         # Setup
@@ -56,11 +56,11 @@ class TestSelectCoveringTests:
         te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
 
         # Execution
-        selected_tests = te.select_covering_tests(
+        selected_tests = te.select_tests(
             changelist, coverage_map, test_info)
 
         # Assertion
-        assert selected_tests == ['test_file1.py', 'test_file2.py', 'test_file3.py']
+        assert sorted(selected_tests) == sorted(['test_file1.py', 'test_file2.py', 'test_file3.py'])
 
     def test_select_covering_tests_for_missing_changelist_data(self):
         # Setup
@@ -71,8 +71,20 @@ class TestSelectCoveringTests:
         te = TestSelectionEngine(TestSelectionPolicy.SELECT_COVERING_TESTS)
 
         # Execution
-        selected_tests = te.select_covering_tests(
+        selected_tests = te.select_tests(
             changelist, coverage_map, test_info)
 
         # Assertion
         assert selected_tests == []
+
+    def test_select_policy_that_does_not_exist(self):
+        changelist = []
+        coverage_map = {'file1.py': ['test_file1.py']}
+        test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
+            'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
+        te = TestSelectionEngine(None)
+
+        # Execution and Assertion
+        with pytest.raises(ValueError):
+            selected_tests = te.select_tests(
+                changelist, coverage_map, test_info)
