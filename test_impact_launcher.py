@@ -106,11 +106,6 @@ def parse_args():
                         type=TestArchitectures,
                         help="Test architecture to carry out test selection and execution on. Built-in support is provided for PyTest, but other architectures can supported by following the provided patterns and generating the required data and passing it to the test selection engine.",
                         required=True)
-    
-    parser.add_argument("--ignore-dir",
-                        type=str,
-                        help="Directories for test runner to ignore, if supported by your test runner.",
-                        required=False)
 
     return parser.parse_args()
 
@@ -132,10 +127,6 @@ def main(args: dict):
     library_directories = args.get(LIB_DIR) or [""]
     changelist_generator_type = args.get(CHANGELIST_GENERATOR_TYPE)
     test_architecture_type = args.get(TEST_ARCHITECTURE_TYPE)
-    ignore_dir = args.get(IGNORE_DIR)
-
-    test_execution_args += f" --ignore {ignore_dir} "
-    test_runner_args += f" --ignore {ignore_dir} "
 
     # Generate changelist
     try:
