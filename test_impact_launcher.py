@@ -112,7 +112,7 @@ def parse_args():
 def main(args: dict):
 
     test_selection_policy = args.get(
-        TEST_SELECTION_POLICY) or TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES
+        TEST_SELECTION_POLICY) or TestSelectionPolicy.SELECT_COVERING_TESTS
     storage_mode = args.get(STORAGE_MODE) or StorageMode.LOCAL
     retention_policy = args.get(RETENTION_POLICY) or RetentionPolicy.KEEP_ALL
     coverage_file = args.get(COVERAGE_TARGET) or Path("coverage_dir")
