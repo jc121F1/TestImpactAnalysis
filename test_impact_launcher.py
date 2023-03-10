@@ -134,8 +134,8 @@ def main(args: dict):
     test_architecture_type = args.get(TEST_ARCHITECTURE_TYPE)
     ignore_dir = args.get(IGNORE_DIR)
 
-    test_execution_args += ignore_dir
-    test_runner_args += ignore_dir
+    test_execution_args += f" --ignore {ignore_dir} "
+    test_runner_args += f" --ignore {ignore_dir} "
 
     # Generate changelist
     try:
