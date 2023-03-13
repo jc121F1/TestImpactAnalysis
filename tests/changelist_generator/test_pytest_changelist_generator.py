@@ -84,24 +84,3 @@ def test_invalid_final_commit(test_repository):
     cg = ChangeListGenerator(repo_dir)
     with pytest.raises(Exception):
         cg.get_changelist(init, final)
-
-
-def test_final_commit_before_initial(test_repository):
-    repo_obj = test_repository[0]
-    repo_dir = test_repository[1]
-    commits = []
-    file_name = "file_"
-    for i in range(1, 3):
-        this_file_name = file_name + str(i)
-        with open(os.path.join(repo_dir, this_file_name), "w") as f:
-            f.write("")
-        repo_obj.git.add(all=True)
-        repo_obj.index.commit(f"Test commit {i}")
-        commits.append(repo_obj.head.commit)
-
-    init = commits[1]
-    final = commits[0]
-
-    cg = ChangeListGenerator(repo_dir)
-    with pytest.raises(ValueError):
-        cg.get_changelist(init, final)

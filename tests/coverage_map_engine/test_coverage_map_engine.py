@@ -52,7 +52,7 @@ class TestCoverageMapEngine():
 
     def test_retrieve_coverage_storage_has_map(self, engine):
         # Setup
-        engine.storage.map = []
+        engine.storage.map = ["test_map"]
 
         # Execute
         result = engine.retrieve_coverage()

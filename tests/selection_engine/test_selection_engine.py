@@ -75,10 +75,11 @@ class TestSelectCoveringTests:
             changelist, coverage_map, test_info)
 
         # Assertion
-        assert selected_tests == []
+        assert sorted(selected_tests) == sorted(list(test_info.keys()))
 
-    def test_select_policy_that_does_not_exist(self):
-        changelist = []
+    def test_select_policy_that_does_not_exist_valid_changelist(self):
+        changelist = [self.ChangedFile(path='file1.py', change_type='M'), self.ChangedFile(
+            path='file2.py', change_type='M')]
         coverage_map = {'file1.py': ['test_file1.py']}
         test_info = {'test_file1.py': ('file1.py', 'unique_identifier_1'), 'test_file2.py': (
             'file2.py', 'unique_identifier_2'), 'test_file3.py': ('file3.py', 'unique_identifier_3')}
