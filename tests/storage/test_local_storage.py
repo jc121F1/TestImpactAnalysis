@@ -88,3 +88,28 @@ class TestLocalStorage():
 
         # check that all 3 files were kept
         assert len(list(storage_location.glob("*.testimpact"))) == 3
+
+    def test_apply_storage_policy_keep_one(self, storage, map, storage_location, mocker):
+        storage.retention_policy = RP.KEEP_ONE
+        # save the map 3 times
+        storage.save_map(map)
+        storage.id = "test"
+        storage.save_map(map)
+        storage.id = "test123123"
+        storage.save_map(map)
+
+        storage.apply_storage_policy()
+
+        # check that all 3 files were kept
+        assert len(list(storage_location.glob("*.testimpact"))) == 1
+
+    def test_apply_storage_policy_keep_ten(self, storage, map, storage_location, mocker):
+        storage.retention_policy = RP.KEEP_TEN
+        # save the map 3 times
+        for i in range(0, 12):
+            storage.save_map(map)
+            storage.id = "test"+str(i)
+        storage.apply_storage_policy()
+
+        # check that all 3 files were kept
+        assert len(list(storage_location.glob("*.testimpact"))) == 10
