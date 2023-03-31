@@ -155,7 +155,7 @@ def main(args: dict):
     # Select tests and prioritise
     test_engine = TestSelectionEngine(test_selection_policy)
     selected_tests = test_engine.select_tests(
-        changelist, coverage_map, test_info, source_directories, library_directories)
+        changelist, coverage_map, test_info)
     logger.info(f"{len(selected_tests)} tests have been selected.")
     logger.info(
         f"The following tests have been selected by Test Impact Analysis:")
