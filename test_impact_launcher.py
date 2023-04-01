@@ -83,16 +83,6 @@ def parse_args():
                         help="Folder to store test_impact files in. Does not need to exist. Defaults to 'current_working_dir/coverage_dir'",
                         required=False)
 
-    parser.add_argument("--source-directories",
-                        type=listoffolders,
-                        help="Comma seperated list of folders that contains source files to scan for dependencies when using the \"select covering and dependencies\" test selection policy",
-                        required=False)
-
-    parser.add_argument("--library-directories",
-                        type=listoffolders,
-                        help="Comma seperated list of folders that contain library files to exclude when scanning for dependencies. \nPlease include any virtual environment files. For use when using the \"select covering and dependencies\" test selection policy",
-                        required=False)
-
     parser.add_argument("--test-execution-args",
                         type=str,
                         help="Arguments to be passed to test runner when executing tests after selection. If not set, test-runner args will be used instead. If neither is set, no extra arguments will be passed to our test runner.",
@@ -124,8 +114,6 @@ def main(args: dict):
     coverage_args = args.get(COVERAGE_ARGS) or ""
     init_commit = args.get(INIT_COMMIT)
     final_commit = args.get(FINAL_COMMIT)
-    source_directories = args.get(SOURCE_DIR) or [""]
-    library_directories = args.get(LIB_DIR) or [""]
     changelist_generator_type = args.get(CHANGELIST_GENERATOR_TYPE)
     test_architecture_type = args.get(TEST_ARCHITECTURE_TYPE)
 
