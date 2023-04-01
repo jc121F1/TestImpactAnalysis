@@ -1,5 +1,6 @@
 import subprocess
-from test_runner import get_logger, BaseTestRunnerEngine
+from test_impact_logger import get_logger
+from test_runner import BaseTestRunnerEngine
 from coverage_map.coverage_generator import PytestCoverageGenerator
 
 logger = get_logger(__file__)

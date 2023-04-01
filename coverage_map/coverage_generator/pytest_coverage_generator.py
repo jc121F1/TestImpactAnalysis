@@ -1,7 +1,7 @@
 
 from .coverage_parser import CoverageParserAndProcessor as Parser
 from .base_coverage_generator import BaseCoverageGenerator
-from .logger import get_logger
+from test_impact_logger import get_logger
 import uuid
 import subprocess
 from pathlib import Path
@@ -28,7 +28,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
         self.report_file = Path(f"{str(self.unique_id)}/coverage_report.json")
         self.xml_file = Path(f"{str(self.unique_id)}/test_xml.xml")
         self.coverage_subprocess = "coverage run " + coverage_args + \
-            f"--data-file=\"{self.coverage_file}\" " + " -m pytest" + test_runner_args
+            f"--data-file=\"{self.coverage_file}\" " + " -m pytest " + test_runner_args
 
     def create_storage(self):
         """

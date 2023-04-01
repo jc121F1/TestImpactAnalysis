@@ -124,9 +124,9 @@ def main(args: dict):
         changelist = generate_changelist(
             changelist_generator_class, init_commit, final_commit)
     except Exception as e:
-        print(format_print(e, "ERROR"))
-        print(format_print(
-            "Execution cannot proceed without a changelist, program will exit.", "ERROR"))
+        logger.error(e)
+        logger.error(
+            "Execution cannot proceed without a changelist, program will exit.")
         sys.exit(0)
 
 
@@ -145,8 +145,8 @@ def main(args: dict):
     test_engine = TestSelectionEngine(test_selection_policy)
     selected_tests = test_engine.select_tests(
         changelist, coverage_map, test_info)
-    print(format_print(f"{len(selected_tests)} tests have been selected.", "INFO"))
-    print(format_print(f"The following tests have been selected by Test Impact Analysis:", "INFO"))
+    logger.info(f"{len(selected_tests)} tests have been selected.")
+    logger.info(f"The following tests have been selected by Test Impact Analysis:")
     pretty_print_list(selected_tests)
 
     pe = TestPrioritisationEngine(
@@ -157,8 +157,8 @@ def main(args: dict):
     tr = test_runner_engine_class()
     additive_coverage_map, return_code = tr.execute_tests(
         test_execution_args, coverage_args, prioritised_list, test_info)
-    print(format_print(
-        f"Test execution concluded with returncode {return_code}", "INFO"))
+    logger.error(
+        f"Test execution concluded with returncode {return_code}")
     coverage_map.update(additive_coverage_map)
     coverage_map_engine.store_coverage(coverage_map)
 
@@ -182,12 +182,7 @@ def get_architecture_specific_tooling(test_architecture_type):
 
 def pretty_print_list(list_to_print):
     for entry in list_to_print:
-        print(format_print(entry, "INFO"))
-
-def format_print(message, severity):
-    now = datetime.now()
-    return f"[{now.strftime('%d/%m/%Y%H:%M:%S')}][Test Impact Analyser][{severity}] {message}"
-
+        logger.info(entry)
 
 if __name__ == "__main__":
     main(vars(parse_args()))

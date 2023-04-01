@@ -1,7 +1,7 @@
 from git import Repo, Commit, Diff, GitError, NoSuchPathError, InvalidGitRepositoryError, GitCommandError
 from pathlib import Path
 from changelist_generator import BaseChangeListGenerator, ChangeInfo
-from .test_impact_logger import get_logger
+from test_impact_logger import get_logger
 
 logger = get_logger(__file__)
 

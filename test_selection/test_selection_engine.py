@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import pkgutil
 import modulefinder
-from .test_selection_logger import get_logger
+from test_impact_logger import get_logger
 
 logger = get_logger(__file__)
 
@@ -44,6 +44,8 @@ class TestSelectionEngine:
                 if (coverage_data := coverage_map[changed_file.path]):
                     tests_to_execute += coverage_data
             except (KeyError) as e:
+                if changed_file.path.endswith("__init__.py"):
+                    continue
                 logger.warning(
                     f"File {changed_file.path} was changed but we have no coverage data available for this file. Executing all tests.")
                 return list(test_info.keys())

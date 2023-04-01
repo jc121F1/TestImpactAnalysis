@@ -1,5 +1,5 @@
 from .base_coverage_parser import BaseCoverageParserAndProcessor
-from .logger import get_logger
+from test_impact_logger import get_logger
 import json
 import pathlib
 

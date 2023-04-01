@@ -1,2 +1,2 @@
 from .coverage_map_engine import *
-from .logger import get_logger
+from test_impact_logger import get_logger
