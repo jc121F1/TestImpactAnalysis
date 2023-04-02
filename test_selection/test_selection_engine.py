@@ -46,7 +46,8 @@ class TestSelectionEngine:
             except (KeyError) as e:
                 if changed_file.path.endswith("__init__.py"):
                     continue
-                logger.warning(
+                else:
+                    logger.warning(
                     f"File {changed_file.path} was changed but we have no coverage data available for this file. Executing all tests.")
-                return list(test_info.keys())
+                    return list(test_info.keys())
         return tests_to_execute
