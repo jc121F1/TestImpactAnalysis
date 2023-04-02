@@ -10,6 +10,7 @@ from test_info_extractor import PyTestTestInformationExtractor
 from test_prioritization import TestPrioritisationEngine, TestPrioritisationPolicy
 from test_impact_logger import get_logger
 from global_enums import TestArchitectures, ChangelistGenerators
+import util
 import sys
 from datetime import datetime
 import pathlib
@@ -29,6 +30,8 @@ LIB_DIR = "library_directories"
 CHANGELIST_GENERATOR_TYPE = "changelist_generator"
 TEST_ARCHITECTURE_TYPE = "test_architecture"
 IGNORE_DIR = "ignore_dir"
+IGNORE_FOLDERS = "ignore_directories"
+IGNORE_FILES = "ignore_files"
 
 logger = get_logger(__file__)
 
@@ -42,6 +45,15 @@ def parse_args():
             if not pathlib.Path(value).is_dir():
                 raise ValueError(
                     f"Error, given argument {value} is not a directory.")
+        return l
+
+    def listoffiles(value):
+        l = value.replace(" ", "").split(",")
+        for entry in l:
+            if not pathlib.Path(value).is_file():
+                raise ValueError(
+                    f"Error, given argument {value} is not a file."
+                )
         return l
 
     parser.add_argument("--test-runner-args",
@@ -98,6 +110,15 @@ def parse_args():
                         help="Test architecture to carry out test selection and execution on. Built-in support is provided for PyTest, but other architectures can supported by following the provided patterns and generating the required data and passing it to the test selection engine.",
                         required=True)
 
+    parser.add_argument("--ignore-directories",
+                        type=listoffolders,
+                        help="Comma seperated list of folders to ignore changes in when selecting tests.",
+                        required=False)
+    
+    parser.add_argument("--ignore-files",
+                        type=listoffiles,
+                        help="Comma seperated list of files(relative or absolute path) to ignore changes in when selecting tests.")
+
     return parser.parse_args()
 
 
@@ -116,6 +137,8 @@ def main(args: dict):
     final_commit = args.get(FINAL_COMMIT)
     changelist_generator_type = args.get(CHANGELIST_GENERATOR_TYPE)
     test_architecture_type = args.get(TEST_ARCHITECTURE_TYPE)
+    folders_to_ignore = args.get(IGNORE_FOLDERS) or list()
+    files_to_ignore = args.get(IGNORE_FILES) or list()
 
     # Generate changelist
     try:
@@ -142,9 +165,10 @@ def main(args: dict):
     test_info = test_info_extractor_class().load_test_information()
 
     # Select tests and prioritise
+    files_to_ignore += util.get_file_names_from_directory(folders_to_ignore)
     test_engine = TestSelectionEngine(test_selection_policy)
     selected_tests = test_engine.select_tests(
-        changelist, coverage_map, test_info)
+        changelist, coverage_map, test_info, files_to_ignore)
     logger.info(f"{len(selected_tests)} tests have been selected.")
     logger.info(f"The following tests have been selected by Test Impact Analysis:")
     pretty_print_list(selected_tests)

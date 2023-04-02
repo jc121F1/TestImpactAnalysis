@@ -19,14 +19,14 @@ class TestSelectionEngine:
     def __init__(self, test_selection_policy: TestSelectionPolicy):
         self.test_selection_mode = test_selection_policy
 
-    def select_tests(self, changelist: list, coverage_map: map, test_info: list):
+    def select_tests(self, changelist: list, coverage_map: map, test_info: list, files_to_ignore: list = []):
         tests_to_execute = []
         if not changelist:
             tests_to_execute = test_info.keys()
         else:
             if self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_TESTS:
                 tests_to_execute = self.select_covering_tests(
-                    changelist, coverage_map, test_info)
+                    changelist, coverage_map, test_info, files_to_ignore)
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_ALL:
                 tests_to_execute = test_info.keys()
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES:
@@ -37,11 +37,11 @@ class TestSelectionEngine:
 
         return list(set(tests_to_execute))
 
-    def select_covering_tests(self, changelist, coverage_map, test_info):
+    def select_covering_tests(self, changelist, coverage_map, test_info, files_to_ignore: list = []):
         tests_to_execute = []
         for changed_file in changelist:
             try:
-                if (coverage_data := coverage_map[changed_file.path]):
+                if (coverage_data := coverage_map[changed_file.path]) and Path(changed_file.path).absolute() not in files_to_ignore:
                     tests_to_execute += coverage_data
             except (KeyError) as e:
                 if changed_file.path.endswith("__init__.py"):
