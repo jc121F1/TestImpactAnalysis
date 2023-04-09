@@ -1,8 +1,5 @@
 from enum import Enum
 from pathlib import Path
-import re
-import pkgutil
-import modulefinder
 from test_impact_logger import get_logger
 
 logger = get_logger(__file__)
