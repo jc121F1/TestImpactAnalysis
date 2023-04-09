@@ -211,6 +211,15 @@ def get_changelist_specific_tooling(changelist_generator_type):
 
 
 def get_architecture_specific_tooling(test_architecture_type):
+    """
+    Returns the correct coverage generator, test information extractor, and test runner engine based on what testing architecture has been selected. This allows for user implemented versions of these classes.
+
+    Args:
+        test_architecture_type (Enum): Which test architecture to use.
+
+    Returns:
+       3-Tuple of TestCoverageGenerator, TestInformationExtractor, and TestRunnerEngine classes.
+    """
     if test_architecture_type == TestArchitectures.PyTest:
         return PytestCoverageGenerator, PyTestTestInformationExtractor, PytestTestRunnerEngine
 
