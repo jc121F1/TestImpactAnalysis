@@ -77,7 +77,7 @@ def parse_args():
 
     parser.add_argument("--test-selection-policy",
                         type=TestSelectionPolicy,
-                        help="Test selection policy: covering_tests | covering_tests_and_dependencies | all. Defaults to covering_tests",
+                        help="Test selection policy: covering_tests | all. Defaults to covering_tests",
                         required=False)
 
     parser.add_argument("--storage-mode",
