@@ -9,10 +9,9 @@ from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
 from test_prioritization import TestPrioritisationEngine, TestPrioritisationPolicy
 from test_impact_logger import get_logger
-from global_enums import TestArchitectures, ChangelistGenerators
+from global_enums import TestArchitectures, ChangelistGenerators, ExecutionMode
 import util
 import sys
-from datetime import datetime
 import pathlib
 
 FROM_COVERAGE = "from_coverage"
@@ -32,6 +31,7 @@ TEST_ARCHITECTURE_TYPE = "test_architecture"
 IGNORE_DIR = "ignore_dir"
 IGNORE_FOLDERS = "ignore_directories"
 IGNORE_FILES = "ignore_files"
+EXECUTION_MODE = "execution_mode"
 
 logger = get_logger(__file__)
 
@@ -42,17 +42,17 @@ def parse_args():
     def listoffolders(value):
         l = value.replace(" ", "").split(",")
         for entry in l:
-            if not pathlib.Path(value).is_dir():
+            if not pathlib.Path(entry).is_dir():
                 raise ValueError(
-                    f"Error, given argument {value} is not a directory.")
+                    f"Error, given argument {entry} is not a directory.")
         return l
 
     def listoffiles(value):
         l = value.replace(" ", "").split(",")
         for entry in l:
-            if not pathlib.Path(value).is_file():
+            if not pathlib.Path(entry).is_file():
                 raise ValueError(
-                    f"Error, given argument {value} is not a file."
+                    f"Error, given argument {entry} is not a file."
                 )
         return l
 
@@ -118,6 +118,11 @@ def parse_args():
     parser.add_argument("--ignore-files",
                         type=listoffiles,
                         help="Comma seperated list of files(relative or absolute path) to ignore changes in when selecting tests.")
+    
+    parser.add_argument("--execution-mode",
+                        type=ExecutionMode,
+                        help="Mode for test runner. \"execute\" will use the test runner to execute the tests, \"list\" will print a list of tests in an executable form out to the console.",
+                        required=False)
 
     return parser.parse_args()
 
@@ -139,6 +144,7 @@ def main(args: dict):
     test_architecture_type = args.get(TEST_ARCHITECTURE_TYPE)
     folders_to_ignore = args.get(IGNORE_FOLDERS) or list()
     files_to_ignore = args.get(IGNORE_FILES) or list()
+    execution_mode = args.get(EXECUTION_MODE)
 
     # Generate changelist
     try:
@@ -170,7 +176,7 @@ def main(args: dict):
     selected_tests = test_engine.select_tests(
         changelist, coverage_map, test_info, files_to_ignore)
     logger.info(f"{len(selected_tests)} tests have been selected.")
-    logger.info(f"The following tests have been selected by Test Impact Analysis:")
+    logger.info("The following tests have been selected by Test Impact Analysis:")
     pretty_print_list(selected_tests)
 
     pe = TestPrioritisationEngine(
@@ -179,12 +185,17 @@ def main(args: dict):
 
     # Run tests, update our coverage map, store it.
     tr = test_runner_engine_class()
-    additive_coverage_map, return_code = tr.execute_tests(
-        test_execution_args, coverage_args, prioritised_list, test_info)
-    logger.error(
-        f"Test execution concluded with returncode {return_code}")
-    coverage_map.update(additive_coverage_map)
-    coverage_map_engine.store_coverage(coverage_map)
+    if execution_mode == ExecutionMode.Execute:
+        additive_coverage_map, return_code = tr.execute_tests(
+            test_execution_args, coverage_args, prioritised_list, test_info)
+        logger.info(
+            f"Test execution concluded with returncode {return_code}")
+        coverage_map.update(additive_coverage_map)
+        coverage_map_engine.store_coverage(coverage_map)
+    elif execution_mode == ExecutionMode.list:
+        tests_in_executable_form = tr.get_tests_to_execute(prioritised_list, test_info)
+        pretty_print_list(tests_in_executable_form)
+        return_code = 0
 
     sys.exit(return_code)
 
