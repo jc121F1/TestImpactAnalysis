@@ -206,8 +206,11 @@ def main(args: dict):
 
 
 def generate_changelist(changelist_generator_class, init_commit, final_commit):
-    cg = changelist_generator_class(Path.cwd())
-    return cg.get_changelist(init_commit, final_commit)
+    try:
+        cg = changelist_generator_class(Path.cwd())
+        return cg.get_changelist(init_commit, final_commit)
+    finally:
+        cg.repo.close()
 
 
 def get_changelist_specific_tooling(changelist_generator_type):
