@@ -50,7 +50,7 @@ def parse_args():
     def listoffiles(value):
         l = value.replace(" ", "").split(",")
         for entry in l:
-            if not pathlib.Path(entry).is_file():
+            if not pathlib.Path(entry).absolute().is_file():
                 raise ValueError(
                     f"Error, given argument {entry} is not a file."
                 )
@@ -171,6 +171,8 @@ def main(args: dict):
     test_info = test_info_extractor_class().load_test_information()
 
     # Select tests and prioritise
+    
+    files_to_ignore = list(map(pathlib.Path, files_to_ignore))
     files_to_ignore += util.get_file_names_from_directory(folders_to_ignore)
     test_engine = TestSelectionEngine(test_selection_policy)
     selected_tests = test_engine.select_tests(
@@ -179,24 +181,27 @@ def main(args: dict):
     logger.info("The following tests have been selected by Test Impact Analysis:")
     pretty_print_list(selected_tests)
 
-    pe = TestPrioritisationEngine(
-        TestPrioritisationPolicy.ALPHABETICAL)
-    prioritised_list = pe.prioritise_tests(selected_tests)
+    if len(selected_tests) > 0:
+        pe = TestPrioritisationEngine(
+            TestPrioritisationPolicy.ALPHABETICAL)
+        prioritised_list = pe.prioritise_tests(selected_tests)
 
-    # Run tests, update our coverage map, store it.
-    tr = test_runner_engine_class()
-    if execution_mode == ExecutionMode.Execute:
-        additive_coverage_map, return_code = tr.execute_tests(
-            test_execution_args, coverage_args, prioritised_list, test_info)
-        logger.info(
-            f"Test execution concluded with returncode {return_code}")
-        coverage_map.update(additive_coverage_map)
-        coverage_map_engine.store_coverage(coverage_map)
-    elif execution_mode == ExecutionMode.List_Only:
-        tests_in_executable_form = tr.get_tests_to_execute(prioritised_list, test_info)
-        pretty_print_list(tests_in_executable_form)
+        # Run tests, update our coverage map, store it.
+        tr = test_runner_engine_class()
+        if execution_mode == ExecutionMode.Execute:
+            additive_coverage_map, return_code = tr.execute_tests(
+                test_execution_args, coverage_args, prioritised_list, test_info)
+            logger.info(
+                f"Test execution concluded with returncode {return_code}")
+            coverage_map.update(additive_coverage_map)
+            coverage_map_engine.store_coverage(coverage_map)
+        elif execution_mode == ExecutionMode.List_Only:
+            tests_in_executable_form = tr.get_tests_to_execute(prioritised_list, test_info)
+            pretty_print_list(tests_in_executable_form)
+            return_code = 0
+
+    else:
         return_code = 0
-
     sys.exit(return_code)
 
 
@@ -225,8 +230,11 @@ def get_architecture_specific_tooling(test_architecture_type):
 
 
 def pretty_print_list(list_to_print):
-    for entry in list_to_print:
-        logger.info(entry)
+    if len(list_to_print)== 0:
+        logger.info("List is empty.")
+    else:
+        for entry in list_to_print:
+            logger.info(entry)
 
 if __name__ == "__main__":
     main(vars(parse_args()))

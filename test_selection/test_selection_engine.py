@@ -41,10 +41,14 @@ class TestSelectionEngine:
         tests_to_execute = []
         for changed_file in changelist:
             try:
-                if (coverage_data := coverage_map[changed_file.path]) and Path(changed_file.path).absolute() not in files_to_ignore:
+                if (coverage_data := coverage_map[changed_file.path]):
                     tests_to_execute += coverage_data
             except (KeyError) as e:
                 if changed_file.path.endswith("__init__.py"):
+                    logger.info(f"File: {changed_file.path} was ignored as it is an init file.")
+                    continue
+                if Path(changed_file.path).absolute() in files_to_ignore or Path(changed_file.path) in files_to_ignore:
+                    logger.info(f"File: {changed_file.path} was ignored as it is in the list of files or directories to ignore.")
                     continue
                 else:
                     logger.warning(
