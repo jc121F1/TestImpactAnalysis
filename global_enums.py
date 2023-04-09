@@ -6,3 +6,7 @@ class TestArchitectures(Enum):
 
 class ChangelistGenerators(Enum):
     Git = "git"
+
+class ExecutionMode(Enum):
+    Execute = "execute"
+    List_Only = "list"
