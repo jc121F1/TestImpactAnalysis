@@ -11,7 +11,7 @@ class PyTestTestInformationExtractor(BaseTestInformationExtractor):
         """
         collector = NodeidsCollector()
         pytest.main(['--collect-only', '-pno:terminal'], plugins=[collector])
-        return {f"{item.module.__name__}.{item.originalname}": TestInfo(item.nodeid, item.location[0].replace("/", "\\")) for item in collector.nodeids}
+        return {f"{item.module.__name__}.{item.location[2]}": TestInfo(item.nodeid, item.location[0].replace("/", "\\")) for item in collector.nodeids}
 
 
 class NodeidsCollector:
