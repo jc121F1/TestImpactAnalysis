@@ -202,7 +202,8 @@ def main(args: dict):
             coverage_map_engine.store_coverage(coverage_map)
         elif execution_mode == ExecutionMode.List_Only:
             tests_in_executable_form = tr.get_tests_to_execute(prioritised_list, test_info)
-            pretty_print_list(tests_in_executable_form)
+            logger.info("Listing all selected tests:")
+            logger.info(" ".join(tests_in_executable_form))
             return_code = 0
 
     else:
