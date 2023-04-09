@@ -144,7 +144,7 @@ def main(args: dict):
     test_architecture_type = args.get(TEST_ARCHITECTURE_TYPE)
     folders_to_ignore = args.get(IGNORE_FOLDERS) or list()
     files_to_ignore = args.get(IGNORE_FILES) or list()
-    execution_mode = args.get(EXECUTION_MODE)
+    execution_mode = args.get(EXECUTION_MODE) or ExecutionMode.Execute
 
     # Generate changelist
     try:
@@ -192,7 +192,7 @@ def main(args: dict):
             f"Test execution concluded with returncode {return_code}")
         coverage_map.update(additive_coverage_map)
         coverage_map_engine.store_coverage(coverage_map)
-    elif execution_mode == ExecutionMode.list:
+    elif execution_mode == ExecutionMode.List_Only:
         tests_in_executable_form = tr.get_tests_to_execute(prioritised_list, test_info)
         pretty_print_list(tests_in_executable_form)
         return_code = 0
