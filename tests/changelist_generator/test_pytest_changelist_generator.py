@@ -14,14 +14,17 @@ def test_init_generator_valid_file_path(test_repository):
 def test_init_generator_invalid_file_path():
     repo_dir = "fake_test_dir"
     with pytest.raises(NoSuchPathError):
-        ChangeListGenerator(repo_dir)
+        cg = ChangeListGenerator(repo_dir)
+        cg.repo.close()
+
 
 def test_init_generator_valid_file_path_no_repo():
     repo_dir = str(uuid.uuid1())
     try:
         os.mkdir(repo_dir)
         with pytest.raises(InvalidGitRepositoryError):
-            ChangeListGenerator(repo_dir)
+            cg = ChangeListGenerator(repo_dir)
+            cg.repo.close()
     finally:
         os.rmdir(repo_dir)
 
@@ -43,6 +46,7 @@ def test_valid_commits(test_repository):
 
     cg = ChangeListGenerator(repo_dir)
     assert isinstance(cg.get_changelist(init, final), list)
+    cg.repo.close()
 
 def test_invalid_init_commit(test_repository):
     repo_obj = test_repository[0]
@@ -64,6 +68,8 @@ def test_invalid_init_commit(test_repository):
     with pytest.raises(Exception):
         cg.get_changelist(init, final)
 
+    cg.repo.close()
+
 
 def test_invalid_final_commit(test_repository):
     repo_obj = test_repository[0]
@@ -84,3 +90,5 @@ def test_invalid_final_commit(test_repository):
     cg = ChangeListGenerator(repo_dir)
     with pytest.raises(Exception):
         cg.get_changelist(init, final)
+
+    cg.repo.close()

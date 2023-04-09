@@ -73,9 +73,3 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         """
 
         return self.repo.is_ancestor(initial_commit_id, final_commit_id)
-
-    def __del__(self):
-        """
-            Override del to ensure that our repo is closed properly. This is a workaround for an issue identified in the GitPython library where it will result in resource leakage if a repo is not explicitly closed.
-        """
-        self.repo.close()
