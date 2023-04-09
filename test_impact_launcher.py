@@ -211,6 +211,16 @@ def generate_changelist(changelist_generator_class, init_commit, final_commit):
 
 
 def get_changelist_specific_tooling(changelist_generator_type):
+    """
+    Returns the correct changelist generator class depending on the changelist_generator_type provided. 
+    Allows for user implementation of different generator classes for different source control systems.
+
+    Args:
+        changelist_generator_type (Enum): Enum representing the type of changelist generator
+
+    Returns:
+        ChangeListGenerator: A changelist generator subclass.
+    """
     if changelist_generator_type == ChangelistGenerators.Git:
         return GitChangeListGenerator
 
