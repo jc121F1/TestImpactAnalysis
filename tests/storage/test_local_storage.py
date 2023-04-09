@@ -3,7 +3,7 @@ import os
 import pytest
 from pathlib import Path
 
-from storage import BaseCoverageMapStorage, RetentionPolicy as RP
+from storage import RetentionPolicy as RP
 from storage.local_storage import LocalCoverageMapStorage
 
 class TestLocalStorage():

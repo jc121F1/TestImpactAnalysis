@@ -1,7 +1,7 @@
 from pathlib import Path
 from storage import LocalCoverageMapStorage as LocalStorage
 from storage import StorageMode as SM, RetentionPolicy as RP
-from .logger import get_logger
+from test_impact_logger import get_logger
 
 logger = get_logger(__file__)
 

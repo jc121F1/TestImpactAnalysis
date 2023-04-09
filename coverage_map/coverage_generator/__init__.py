@@ -1,3 +1,2 @@
 from .base_coverage_generator import BaseCoverageGenerator
 from .pytest_coverage_generator import PytestCoverageGenerator
-from .logger import get_logger
