@@ -1,4 +1,5 @@
 import argparse
+import logging
 from storage import StorageMode, RetentionPolicy
 from coverage_map import CoverageMapEngine
 from coverage_map.coverage_generator import PytestCoverageGenerator
@@ -8,7 +9,7 @@ from pathlib import Path
 from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
 from test_prioritization import TestPrioritisationEngine, TestPrioritisationPolicy
-from test_impact_logger import get_logger
+from test_impact_logger import get_logger, get_handler
 from global_enums import TestArchitectures, ChangelistGenerators, ExecutionMode
 import util
 import sys
@@ -169,7 +170,11 @@ def main(args: dict):
 
     coverage_map = coverage_map_engine.coverage_map
     test_info = test_info_extractor_class().load_test_information()
-
+    
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+    
+    logger.addHandler(get_handler(__file__))
     # Select tests and prioritise
     
     files_to_ignore = list(map(pathlib.Path, files_to_ignore))
