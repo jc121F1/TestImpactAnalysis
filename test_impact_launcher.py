@@ -121,7 +121,7 @@ def parse_args():
     
     parser.add_argument("--execution-mode",
                         type=ExecutionMode,
-                        help="Mode for test runner. \"execute\" will use the test runner to execute the tests, \"list\" will print a list of tests in an executable form out to the console.",
+                        help="Mode for test runner. \"execute\" will use the test runner to execute the tests, \"list\" will print a list of tests in an executable form out to the console. Defaults to execute.",
                         required=False)
 
     return parser.parse_args()
