@@ -30,8 +30,29 @@ class PytestTestRunnerEngine(BaseTestRunnerEngine):
         result = coverage_generator.load_coverage()
         return (result, completed_process.returncode)
         
+    def get_tests_to_execute(self, tests_to_run, test_info):
+        """     
+        Returns a list of pytest nodeids that can be fed into pytest to be executed. Used in no-execution mode.
+
+        Args:
+            tests_to_run (List): List of tests to execute
+            test_info(Map): Map with qualified names of tests as the key, and a namedtuple TestInfo containing the path to the test file and the name to be passed to the test runner to execute the test.
+
+        Returns:
+            List: List of tests in a form that can be used by the test runner to execute all selected tests.
+        """
+        return self.extract_test_nodeids(test_info, tests_to_run)
 
     def extract_test_nodeids(self, test_info, tests_to_run):
+        """Extracts a list of nodeids from our list of tests to run.
+
+        Args:
+            tests_to_run (List): List of tests to execute
+            test_info(Map): Map with qualified names of tests as the key, and a namedtuple TestInfo containing the path to the test file and the name to be passed to the test runner to execute the test.
+
+        Returns:
+            List: List of tests in a form that can be used by the test runner to execute all selected tests.
+        """
         nodeids = []
         for (key, test) in test_info.items():
             if key in tests_to_run:
