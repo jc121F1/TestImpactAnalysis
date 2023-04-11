@@ -73,3 +73,9 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         """
 
         return self.repo.is_ancestor(initial_commit_id, final_commit_id)
+    
+    def cleanup(self):
+        try:
+            self.repo.close()
+        except Exception as e:
+            logger.debug(e)

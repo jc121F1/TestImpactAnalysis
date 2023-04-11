@@ -20,6 +20,13 @@ class BaseChangeListGenerator(ABC):
             Returns a list of files that have changed as well as what type of change was made and the path to that file.
         """
         pass
+    
+    @abstractmethod
+    def cleanup(self):
+        """
+        Allows for any cleanup that is required by different implementations once they are no longer needed.
+        """
+        pass
 
 
 ChangeInfo = namedtuple("ChangeInfo", ["path","change_type"])
