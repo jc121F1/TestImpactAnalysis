@@ -171,10 +171,11 @@ def main(args: dict):
     coverage_map = coverage_map_engine.coverage_map
     test_info = test_info_extractor_class().load_test_information()
     
+    # This section of code prevents duplication of logging handlers that can occur when extracting test information
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
-    
     logger.addHandler(get_handler(__file__))
+
     # Select tests and prioritise
     
     files_to_ignore = list(map(pathlib.Path, files_to_ignore))
