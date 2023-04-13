@@ -8,7 +8,6 @@ logger = get_logger(__file__)
 class TestSelectionPolicy(Enum):
     SELECT_ALL = "all"
     SELECT_COVERING_TESTS = "covering_tests"
-    SELECT_COVERING_AND_DEPENDENCIES = "covering_tests_and_dependencies"
 
 
 class TestSelectionEngine:
@@ -25,9 +24,6 @@ class TestSelectionEngine:
                 tests_to_execute = self.select_covering_tests(
                     changelist, coverage_map, test_info, files_to_ignore)
             elif self.test_selection_mode == TestSelectionPolicy.SELECT_ALL:
-                tests_to_execute = test_info.keys()
-            elif self.test_selection_mode == TestSelectionPolicy.SELECT_COVERING_AND_DEPENDENCIES:
-                logger.warning("Covering and dependencies policy not enabled, selecting all tests")
                 tests_to_execute = test_info.keys()
             else:
                 raise ValueError("Provided policy does not exist.")
