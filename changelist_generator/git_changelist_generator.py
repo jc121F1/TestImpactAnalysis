@@ -41,21 +41,16 @@ class GitChangeListGenerator(BaseChangeListGenerator):
             List[ChangeInfo] : A list of ChangeInfo objects containing the path to each changed file and the change type.
         """
         try:
-            #if self.initial_commit_is_before_final_commit(initial_commit_id, final_commit_id):
+            init_commit = self.repo.commit(initial_commit_id)
+            logger.info(f"Selecting init_commit as : {init_commit}")
+            final_commit = self.repo.commit(final_commit_id)
+            logger.info(f"Selecting final commit as : {final_commit}")
+            diff = final_commit.diff(init_commit)
 
-                init_commit = self.repo.commit(initial_commit_id)
-                logger.info(f"Selecting init_commit as : {init_commit}")
-                final_commit = self.repo.commit(final_commit_id)
-                logger.info(f"Selecting final commit as : {final_commit}")
-                diff = final_commit.diff(init_commit)
+            def extract_path_and_change_type(diff):
+                return ChangeInfo(diff.a_path.replace("/", "\\"), diff.change_type)
 
-                def extract_path_and_change_type(diff):
-                    return ChangeInfo(diff.a_path.replace("/", "\\"), diff.change_type)
-
-                return list(map(extract_path_and_change_type, diff))
-            #else:
-            #    raise ValueError(
-            #        "Initial commit occurs after final commit. This is an invalid configuration for generating a changelist.")
+            return list(map(extract_path_and_change_type, diff))
         except (Exception, GitCommandError) as e:
             logger.error(f"An exception occured, it is as follows:  {e}")
             raise ValueError(" An error occurred during changelist generator, execution cannot proceed.")

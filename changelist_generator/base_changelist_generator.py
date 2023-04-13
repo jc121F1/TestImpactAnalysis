@@ -28,5 +28,11 @@ class BaseChangeListGenerator(ABC):
         """
         pass
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.cleanup()
+
 
 ChangeInfo = namedtuple("ChangeInfo", ["path","change_type"])
