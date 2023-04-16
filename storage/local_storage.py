@@ -4,7 +4,7 @@ from storage import BaseCoverageMapStorage, RetentionPolicy as RP, get_logger
 import os
 from pathlib import Path
 
-logger = get_logger(__file__)
+logger = get_logger("logger")
 
 
 class LocalCoverageMapStorage(BaseCoverageMapStorage):
@@ -27,6 +27,7 @@ class LocalCoverageMapStorage(BaseCoverageMapStorage):
 
         """
         try:
+            logger.debug(f"Loading map from {self.storage_location}")
             self.validate_storage_location()
             glob = self.storage_location.rglob(
                 f'*{self.file_extension}')
@@ -55,6 +56,7 @@ class LocalCoverageMapStorage(BaseCoverageMapStorage):
         Returns:
             None
         """
+        logger.debug(f"Saving map to {self.storage_location}")
         try:
             if not self.storage_location.exists():
                 os.mkdir(self.storage_location)

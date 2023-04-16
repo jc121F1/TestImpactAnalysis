@@ -10,7 +10,7 @@ class PyTestTestInformationExtractor(BaseTestInformationExtractor):
         Must return a map of qualified(full name) names of tests keys with TestInfo namedtuples values, where the first entry is the name of the test that can be passed to the test runner to execute the test, and the second is the path to the test file.
         """
         collector = NodeidsCollector()
-        pytest.main(['--collect-only','-s','--disable-warnings'], plugins=[collector])
+        pytest.main(['--collect-only','-s','--disable-warnings',"--quiet"], plugins=[collector])
         return {f"{item.module.__name__}.{item.location[2]}": TestInfo(item.nodeid, item.location[0].replace("/", "\\")) for item in collector.nodeids}
 
 

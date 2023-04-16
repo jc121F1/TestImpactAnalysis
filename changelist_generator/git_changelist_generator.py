@@ -3,7 +3,7 @@ from pathlib import Path
 from changelist_generator import BaseChangeListGenerator, ChangeInfo
 from test_impact_logger import get_logger
 
-logger = get_logger(__file__)
+logger = get_logger("logger")
 
 
 class GitChangeListGenerator(BaseChangeListGenerator):
@@ -21,7 +21,6 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         """
         try:
             self.repo = Repo(path)
-            print(self.repo.working_tree_dir)
         except (NoSuchPathError, InvalidGitRepositoryError) as e:
             logger.error("An exception occured, it is as follows:  {e}")
             raise e

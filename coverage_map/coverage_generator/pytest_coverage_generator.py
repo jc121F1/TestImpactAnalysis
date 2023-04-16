@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import os
 
-logger = get_logger(__file__)
+logger = get_logger("logger")
 
 #TODO WE NEED TO COLLECT TESTS BETTER
 

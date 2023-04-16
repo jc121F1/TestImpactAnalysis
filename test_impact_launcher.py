@@ -9,8 +9,8 @@ from pathlib import Path
 from test_runner.pytest_test_runner_engine import PytestTestRunnerEngine
 from test_info_extractor import PyTestTestInformationExtractor
 from test_prioritization import TestPrioritisationEngine, TestPrioritisationPolicy
-from test_impact_logger import get_logger, get_handler
-from global_enums import TestArchitectures, ChangelistGenerators, ExecutionMode
+from test_impact_logger import get_logger, get_handler, config_logger
+from global_enums import TestArchitectures, ChangelistGenerators, ExecutionMode, Verbosity
 import util
 import sys
 import pathlib
@@ -33,9 +33,7 @@ IGNORE_DIR = "ignore_dir"
 IGNORE_FOLDERS = "ignore_directories"
 IGNORE_FILES = "ignore_files"
 EXECUTION_MODE = "execution_mode"
-
-logger = get_logger(__file__)
-
+VERBOSITY = "verbosity"
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -124,12 +122,18 @@ def parse_args():
                         type=ExecutionMode,
                         help="Mode for test runner. \"execute\" will use the test runner to execute the tests, \"list\" will print a list of tests in an executable form out to the console. Defaults to execute.",
                         required=False)
+    
+    parser.add_argument("--verbosity",
+                        type=Verbosity,
+                        help="Verbosity of logging. Options are Normal | Debug | Silenced. Defaults to Normal.",
+                        required=False)
 
     return parser.parse_args()
 
+logger = config_logger("logger")
 
 def main(args: dict):
-
+    
     test_selection_policy = args.get(
         TEST_SELECTION_POLICY) or TestSelectionPolicy.SELECT_COVERING_TESTS
     storage_mode = args.get(STORAGE_MODE) or StorageMode.LOCAL
@@ -146,13 +150,16 @@ def main(args: dict):
     folders_to_ignore = args.get(IGNORE_FOLDERS) or list()
     files_to_ignore = args.get(IGNORE_FILES) or list()
     execution_mode = args.get(EXECUTION_MODE) or ExecutionMode.Execute
+    verbosity = lookup_logging_level(args.get(VERBOSITY)) or logging.INFO
 
+    logger.setLevel(verbosity)
     # Generate changelist
     try:
         changelist_generator_class = get_changelist_specific_tooling(
             changelist_generator_type)
         changelist = generate_changelist(
             changelist_generator_class, init_commit, final_commit)
+        logger.debug(changelist)
     except Exception as e:
         logger.error(e)
         logger.error(
@@ -175,6 +182,7 @@ def main(args: dict):
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
     logger.addHandler(get_handler(__file__))
+    logger.setLevel(verbosity)
 
     # Select tests and prioritise
     
@@ -185,7 +193,7 @@ def main(args: dict):
         changelist, coverage_map, test_info, files_to_ignore)
     logger.info(f"{len(selected_tests)} tests have been selected.")
     logger.info("The following tests have been selected by Test Impact Analysis:")
-    pretty_print_list(selected_tests)
+    pretty_print_list(logger, selected_tests)
 
     if len(selected_tests) > 0:
         pe = TestPrioritisationEngine(
@@ -245,8 +253,15 @@ def get_architecture_specific_tooling(test_architecture_type):
     if test_architecture_type == TestArchitectures.PyTest:
         return PytestCoverageGenerator, PyTestTestInformationExtractor, PytestTestRunnerEngine
 
+def lookup_logging_level(level):
+    if level == Verbosity.Debug:
+        return logging.DEBUG
+    if level == Verbosity.Normal:
+        return logging.INFO
+    if level == Verbosity.Silenced:
+        return logging.CRITICAL
 
-def pretty_print_list(list_to_print):
+def pretty_print_list(logger, list_to_print):
     if len(list_to_print)== 0:
         logger.info("List is empty.")
     else:

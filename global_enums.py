@@ -10,3 +10,8 @@ class ChangelistGenerators(Enum):
 class ExecutionMode(Enum):
     Execute = "execute"
     List_Only = "list"
+
+class Verbosity(Enum):
+    Normal = "Normal"
+    Debug = "Debug"
+    Silenced = "Silenced"

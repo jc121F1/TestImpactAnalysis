@@ -2,7 +2,7 @@ from enum import Enum
 from pathlib import Path
 from test_impact_logger import get_logger
 
-logger = get_logger(__file__)
+logger = get_logger("logger")
 
 
 class TestSelectionPolicy(Enum):
