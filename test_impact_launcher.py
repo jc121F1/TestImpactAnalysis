@@ -176,7 +176,9 @@ def main(args: dict):
     coverage_map_engine.generate_coverage()
 
     coverage_map = coverage_map_engine.coverage_map
+    logger.debug(coverage_map)
     test_info = test_info_extractor_class().load_test_information()
+    logger.debug(test_info)
     
     # This section of code prevents duplication of logging handlers that can occur when extracting test information
     for handler in logger.handlers[:]:
