@@ -195,7 +195,8 @@ def main(args: dict):
         changelist, coverage_map, test_info, files_to_ignore)
     logger.info(f"{len(selected_tests)} tests have been selected.")
     logger.info("The following tests have been selected by Test Impact Analysis:")
-    pretty_print_list(logger, selected_tests)
+    logger.debug(selected_tests)
+    pretty_print_list(selected_tests)
 
     if len(selected_tests) > 0:
         pe = TestPrioritisationEngine(
@@ -263,7 +264,7 @@ def lookup_logging_level(level):
     if level == Verbosity.Silenced:
         return logging.CRITICAL
 
-def pretty_print_list(logger, list_to_print):
+def pretty_print_list(list_to_print):
     if len(list_to_print)== 0:
         logger.info("List is empty.")
     else:
