@@ -1,12 +1,11 @@
-from abc import ABC, abstractclassmethod
-
+from abc import ABC, abstractmethod
 
 class BaseCoverageGenerator(ABC):
     """
     Base class for Coverage Generator. Sub classes will extend this class for specific functionality, such as supporting different coverage generation methods.
     """
 
-    @abstractclassmethod
+    @abstractmethod
     def __init__(self, test_runner_args, coverage_args):
         """        Initialise CoverageGenerator class.
 
@@ -15,13 +14,13 @@ class BaseCoverageGenerator(ABC):
             coverage_args (List[String]): List of arguments to pass through to the test runner we use to run tests and generate coverage.
         """
 
-    @abstractclassmethod
+    @abstractmethod
     def generate_coverage(self):
         """
         Generate coverage for our tests.
         """
 
-    @abstractclassmethod
+    @abstractmethod
     def load_coverage(self):
         """
         Load our generated coverage info using a CoverageParser and return the resulting coverage data. 
