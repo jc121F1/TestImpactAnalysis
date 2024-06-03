@@ -1,0 +1,52 @@
+name: Test Impact Analysis
+ 
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  run:
+    runs-on: windows-latest
+    environment: testing
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Checkout TIA
+      uses: actions/checkout@v3
+      with:
+        repository: jc121f1/TestImpactAnalysis
+        token: ${{ secrets.GH_PT }}
+        path: TIA
+    - name: Remove File
+      uses: JesseTG/rm@v1.0.0
+      with:
+        path: TIA/tests
+    - name: Create .coveragerc file
+      run: |
+        .\TIA\setupcoverage.bat
+    - name: Download testimpact artifacts
+      uses: actions/cache@v3
+      with:
+        key: testimpactfiles-${{ runner.os }}-${{ github.run_id }}
+        path: coverage_dir
+        restore-keys: |
+          testimpactfiles-${{ runner.os }}
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r TIA/requirements.txt
+    - name: Select Tests with Covering Tests policy and Execute 
+      run: |
+        python TIA/test_impact_launcher.py --init-commit ${{ github.event.pull_request.base.sha }} --final-commit ${{ github.event.pull_request.head.sha }} --changelist-generator git --test-architecture pytest
+    - name: Select Tests with all tests policy and Execute
+      run: |
+        python TIA/test_impact_launcher.py --init-commit ${{ github.event.pull_request.base.sha }} --final-commit ${{ github.event.pull_request.head.sha }} --changelist-generator git --test-architecture pytest --test-selection-policy all
