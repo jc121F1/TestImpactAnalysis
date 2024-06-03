@@ -38,7 +38,7 @@ VERBOSITY = "verbosity"
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    def listoffolders(value):
+    def list_of_folders(value):
         l = value.replace(" ", "").split(",")
         for entry in l:
             if not pathlib.Path(entry).is_dir():
@@ -46,7 +46,7 @@ def parse_args():
                     f"Error, given argument {entry} is not a directory.")
         return l
 
-    def listoffiles(value):
+    def list_of_files(value):
         l = value.replace(" ", "").split(",")
         for entry in l:
             if not pathlib.Path(entry).absolute().is_file():
@@ -110,12 +110,12 @@ def parse_args():
                         required=True)
 
     parser.add_argument("--ignore-directories",
-                        type=listoffolders,
+                        type=list_of_folders,
                         help="Comma seperated list of folders to ignore changes in when selecting tests.",
                         required=False)
     
     parser.add_argument("--ignore-files",
-                        type=listoffiles,
+                        type=list_of_files,
                         help="Comma seperated list of files(relative or absolute path) to ignore changes in when selecting tests.")
     
     parser.add_argument("--execution-mode",
@@ -167,8 +167,7 @@ def main(args: dict):
         sys.exit(0)
 
 
-    test_generator_class, test_info_extractor_class, test_runner_engine_class = get_architecture_specific_tooling(
-        test_architecture_type)
+    test_generator_class, test_info_extractor_class, test_runner_engine_class = get_architecture_specific_tooling(test_architecture_type)
 
     # Generate coverage map or load it from memory
     coverage_map_engine = CoverageMapEngine(
