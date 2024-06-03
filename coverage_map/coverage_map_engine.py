@@ -46,7 +46,7 @@ class CoverageMapEngine():
         self.generator_class = generator_class
         self.initialise_storage()
 
-    def initialise_storage(self):
+    def initialise_storage(self) -> None:
         """
         Initializes the storage based on the storage mode.
         """
