@@ -1,8 +1,8 @@
-from abc import ABC, abstractclassmethod, abstractproperty
+from abc import ABC, abstractmethod, abstractproperty
 from pathlib import Path
 class BaseCoverageParserAndProcessor(ABC):
 
-    @abstractclassmethod
+    @abstractmethod
     def __init__(self, filepath: Path):
         """
         Initialise CoverageParserAndProcessor and execute the loading, parsing, and processing of the coverage data stored at filepath.
@@ -12,7 +12,8 @@ class BaseCoverageParserAndProcessor(ABC):
         """
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def coverage(self):
         """Getter for our coverage data
 
