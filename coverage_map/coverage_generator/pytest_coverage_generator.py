@@ -16,7 +16,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
 
     unique_id = uuid.uuid4()
 
-    def __init__(self, test_runner_args, coverage_args):
+    def __init__(self, test_runner_args: list[str], coverage_args: list[str]) -> None:
         """        Initialise CoverageGenerator class. Sets up file names and builds our commandline arguments.
 
         Args:
@@ -30,7 +30,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
         self.coverage_subprocess = "coverage run " + coverage_args + \
             f"--data-file=\"{self.coverage_file}\" " + " -m pytest " + test_runner_args
 
-    def create_storage(self):
+    def create_storage(self) -> None:
         """
         Create storage folder for storing generated coverage data
         """
@@ -39,7 +39,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
         except Exception as e:
             pass
 
-    def delete_storage(self):
+    def delete_storage(self) -> None:
         """
         Delete storage folder used for storing generated coverage data
         """
@@ -48,7 +48,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
         except Exception as e:
             pass
 
-    def generate_coverage(self):
+    def generate_coverage(self) -> subprocess.CompletedProcess[bytes]:
         """
         Generate coverage data for our tests.
         """
@@ -63,7 +63,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
             f"Converting coverage report to JSON returned with ExitCode: {report_result.returncode}")
         return coverage_result
 
-    def load_coverage(self):
+    def load_coverage(self) -> dict:
         """
         Load our generated coverage info using a CoverageParser and return the resulting coverage data. 
         Will raise a ValueError if coverage data is not found.
@@ -76,7 +76,7 @@ class PytestCoverageGenerator(BaseCoverageGenerator):
             return self.coverage_parser.coverage
         raise ValueError("Coverage file does not exist")
 
-    def __del__(self):
+    def __del__(self) -> None:
         """
         Calls delete storage when this object is GCed to ensure artifacts aren't left orphaned.
         """
