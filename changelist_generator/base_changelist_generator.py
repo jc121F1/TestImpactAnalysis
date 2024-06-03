@@ -13,7 +13,7 @@ class BaseChangeListGenerator(ABC):
         """
 
     @abstractmethod
-    def get_changelist(self, init_id, final_id):
+    def get_changelist(self, init_id: str, final_id: str):
         """
             Generates a changelist between two commits. Initial revision/commit id must be the ancestor of the final revision/commit id (that is, comes before in our tree of commits)
 

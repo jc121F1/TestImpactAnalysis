@@ -1,4 +1,4 @@
-from git import Repo, Commit, Diff, GitError, NoSuchPathError, InvalidGitRepositoryError, GitCommandError
+from git import Repo, NoSuchPathError, InvalidGitRepositoryError, GitCommandError
 from pathlib import Path
 from changelist_generator import BaseChangeListGenerator, ChangeInfo
 from test_impact_logger import get_logger
@@ -12,7 +12,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
         It takes a repo as an argument upon creation.
     """
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path) -> None:
         """
            Creates a ChangeListGenerator object.
 
@@ -25,7 +25,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
             logger.error("An exception occured, it is as follows:  {e}")
             raise e
 
-    def get_changelist(self, initial_commit_id, final_commit_id):
+    def get_changelist(self, initial_commit_id: str, final_commit_id: str) -> list[ChangeInfo]:
         """
             Generates a changelist between two commits, returning a list of namedtuples "ChangeInfo" that contain the path to a file and the change type of that file. Initial commit must be the ancestor of the final commit (that is, comes before in our tree of commits)
 
@@ -54,7 +54,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
             logger.error(f"An exception occured, it is as follows:  {e}")
             raise ValueError(" An error occurred during changelist generator, execution cannot proceed.")
 
-    def initial_commit_is_before_final_commit(self, initial_commit_id, final_commit_id):
+    def initial_commit_is_before_final_commit(self, initial_commit_id: str, final_commit_id: str) -> bool:
         """
             Returns whether the commit referred to by initial_commit_id is an ancestor of final_commit_id
 
@@ -68,7 +68,7 @@ class GitChangeListGenerator(BaseChangeListGenerator):
 
         return self.repo.is_ancestor(initial_commit_id, final_commit_id)
     
-    def cleanup(self):
+    def cleanup(self) -> None:
         try:
             self.repo.close()
         except Exception as e:
