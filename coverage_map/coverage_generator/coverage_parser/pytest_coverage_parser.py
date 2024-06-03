@@ -18,8 +18,8 @@ class CoverageParserAndProcessor(BaseCoverageParserAndProcessor):
     __json_obj = {}
     __coverage_data = {}
 
-    def __init__(self, filepath: pathlib.Path):
-        """
+    def __init__(self, filepath: pathlib.Path) -> None:
+        """"
         Initialise CoverageParserAndProcessor and execute the loading, parsing, and processing of the coverage data stored at filepath.
 
         Args:
@@ -35,8 +35,8 @@ class CoverageParserAndProcessor(BaseCoverageParserAndProcessor):
             logger.error(e)
             raise e
 
-    def parse_covering_tests(self, file_info):
-        """ Parse our coverage data and return a set of all the tests that cover this file.
+    def parse_covering_tests(self, file_info) -> list[str]:
+        """ Parse our coverage data and return a unique list of all the tests that cover this file.
 
         Args:
             file_info (dict): Dictionary containing each line and the contexts that access this line.
@@ -50,7 +50,7 @@ class CoverageParserAndProcessor(BaseCoverageParserAndProcessor):
         return [x for x in set(covering_tests) if x != ""]
 
     @property
-    def coverage(self):
+    def coverage(self) -> dict:
         """Getter for our coverage data
 
         Returns:
